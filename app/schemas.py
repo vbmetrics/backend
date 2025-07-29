@@ -1,17 +1,34 @@
 from pydantic import BaseModel
 from datetime import date
-import uuid
+from uuid import UUID
 
-class TeamBase(BaseModel):
-    base_name: str
+import enum
 
-class Match(BaseModel):
-    id: uuid.UUID
-    date: date
-    score: str | None = None
-    status: str | None = None
-    home_team: TeamBase
-    away_team: TeamBase
+class SeasonType(str, enum.Enum):
+    club = "club"
+    national = "national"
 
+class CountryBase(BaseModel):
+    code: str
+    name: str
+
+class CountryCreate(CountryBase):
+    pass
+
+class Country(CountryBase):
     class Config:
-        from_attributes = True # formerly orm_mode = True
+        from_attributes = True
+
+class SeasonBase(BaseModel):
+    name: str
+    season_type: SeasonType
+    start_date: date
+    end_date: date
+
+class SeasonCreate(SeasonBase):
+    pass
+
+class Season(SeasonBase):
+    id: UUID
+    class Config:
+        from_attributes = True
