@@ -73,8 +73,79 @@ def create_arena(db: Session, arena: schemas.ArenaCreate):
     db.refresh(db_arena)
     return db_arena
 
-def update_arena():
-    return
+def update_arena(db: Session, arena_id: UUID, arena_update: schemas.ArenaUpdate):
+    db_arena = get_arena(db, arena_id=arena_id)
+    if not db_arena:
+        return None
+    
+    update_data = arena_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_arena, key, value)
 
-def delete_arena():
-    return
+    db.add(db_arena)
+    db.commit()
+    db.refresh(db_arena)
+
+    return db_arena
+
+def delete_arena(db: Session, arena_id: UUID):
+    db_arena = get_arena(db, arena_id=arena_id)
+    if not db_arena:
+        return None
+    
+    db.delete(db_arena)
+    db.commit()
+    
+    return db_arena
+
+# ==== Staff Member CRUD ====
+
+def get_staff_member(db: Session, staff_member_id: UUID):
+    return db.query(models.StaffMember).filter(models.StaffMember.id == staff_member_id).first()
+
+def get_staff_members(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.StaffMember).offset(skip).limit(limit).all()
+
+def create_staff_member(db: Session, staff_member: schemas.StaffMemberCreate):
+    db_staff_member = models.StaffMember(**staff_member.model_dump())
+    db.add(db_staff_member)
+    db.commit()
+    db.refresh(db_staff_member)
+    return db_staff_member
+
+def update_staff_member(db: Session, staff_member_id: UUID, staff_member_update: schemas.StaffMemberUpdate):
+    db_staff_member = get_staff_member(db, staff_member_id=staff_member_id)
+    if not db_staff_member:
+        return None
+    
+    update_data = staff_member_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_staff_member, key, value)
+
+    db.add(db_staff_member)
+    db.commit()
+    db.refresh(db_staff_member)
+
+    return db_staff_member
+
+def delete_staff_member(db: Session, staff_member_id: UUID):
+    db_staff_member = get_staff_member(db, staff_member_id=staff_member_id)
+    if not db_staff_member:
+        return None
+    
+    db.delete(db_staff_member)
+    db.commit()
+    
+    return db_staff_member
+
+# ==== Player CRUD ====
+
+# TODO
+
+# ==== Team CRUD ====
+
+# TODO
+
+# ==== Player-Team History CRUD ====
+
+# TODO
