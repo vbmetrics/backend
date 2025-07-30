@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import countries, seasons
+from .routers import countries, seasons, arenas
 
 #from .database import engine
 #from . import models
@@ -29,6 +29,7 @@ api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(countries.router)
 api_router.include_router(seasons.router)
+api_router.include_router(arenas.router)
 # TODO: other routers
 
 app.include_router(api_router)
