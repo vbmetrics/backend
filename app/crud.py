@@ -140,7 +140,43 @@ def delete_staff_member(db: Session, staff_member_id: UUID):
 
 # ==== Player CRUD ====
 
-# TODO
+def get_player(db: Session, player_id: UUID):
+    return db.query(models.Player).filter(models.Player.id == player_id).first()
+
+def get_players(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Player).offset(skip).limit(limit).all()
+
+def create_player(db: Session, player: schemas.PlayerCreate):
+    db_player = models.Player(**player.model_dump())
+    db.add(db_player)
+    db.commit()
+    db.refresh(db_player)
+    return db_player
+
+def update_player(db: Session, player_id: UUID, player_update: schemas.PlayerUpdate):
+    db_player = get_player(db, player_id=player_id)
+    if not db_player:
+        return None
+    
+    update_data = player_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_player, key, value)
+
+    db.add(db_player)
+    db.commit()
+    db.refresh(db_player)
+
+    return db_player
+
+def delete_player(db: Session, player_id: UUID):
+    db_player = get_player(db, player_id=player_id)
+    if not db_player:
+        return None
+    
+    db.delete(db_player)
+    db.commit()
+    
+    return db_player
 
 # ==== Team CRUD ====
 

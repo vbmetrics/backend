@@ -39,7 +39,7 @@ api_router.include_router(countries.router)
 api_router.include_router(seasons.router)
 api_router.include_router(arenas.router)
 api_router.include_router(staff_members.router)
-#api_router.include_router(players.router)
+api_router.include_router(players.router)
 #api_router.include_router(teams.router)
 #api_router.include_router(player_team_history.router)
 # TODO: other routers

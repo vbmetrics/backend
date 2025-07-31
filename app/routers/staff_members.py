@@ -12,16 +12,16 @@ router = APIRouter(
     tags=["Staff Members"]
 )
 
-""" @router.post("/", response_model=schemas.StaffMember)
-def create_arena(arena: schemas.ArenaCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=schemas.StaffMember)
+def create_staff_member(staff_member: schemas.StaffMemberCreate, db: Session = Depends(get_db)):
     try:
-        return crud.create_arena(db=db, arena=arena)
+        return crud.create_staff_member(db=db, staff_member=staff_member)
     except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail=f"Arena with name '{arena.name}' already exists."
-        ) """
+            detail=f"Staff Member with name '{staff_member.first_name}' already exists."
+        )
 
 @router.get("/", response_model=List[schemas.StaffMember])
 def read_staff_members(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -35,16 +35,16 @@ def read_staff_member(staff_member_id: UUID, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Staff Member not found")
     return db_staff_member
 
-""" @router.put("/{arena_id}", response_model=schemas.Arena)
-def update_arena(arena_id: UUID, arena: schemas.ArenaUpdate, db: Session = Depends(get_db)):
-    db_arena = crud.update_arena(db, arena_id=arena_id, arena_update=arena)
-    if db_arena is None:
-        raise HTTPException(status_code=404, detail="Arena not found")
-    return db_arena
+@router.put("/{staff_member_id}", response_model=schemas.StaffMember)
+def update_staff_member(staff_member_id: UUID, staff_member: schemas.StaffMemberUpdate, db: Session = Depends(get_db)):
+    db_staff_member = crud.update_staff_member(db, staff_member_id=staff_member_id, staff_member_update=staff_member)
+    if db_staff_member is None:
+        raise HTTPException(status_code=404, detail="Staff Member not found")
+    return db_staff_member
 
-@router.delete("/{arena_id}", response_model=schemas.Arena)
-def delete_arena(arena_id: UUID, db: Session = Depends(get_db)):
-    db_arena = crud.delete_arena(db, arena_id=arena_id)
-    if db_arena is None:
-        raise HTTPException(status_code=404, detail="Arena not found")
-    return db_arena """
+@router.delete("/{staff_member_id}", response_model=schemas.StaffMember)
+def delete_staff_member(staff_member_id: UUID, db: Session = Depends(get_db)):
+    db_staff_member = crud.delete_staff_member(db, staff_member_id=staff_member_id)
+    if db_staff_member is None:
+        raise HTTPException(status_code=404, detail="Staff Member not found")
+    return db_staff_member
