@@ -8,6 +8,7 @@ from .routers import (
     staff_members, 
     players, 
     teams, 
+    staff_team_history,
     player_team_history
 )
 
@@ -40,7 +41,8 @@ api_router.include_router(seasons.router)
 api_router.include_router(arenas.router)
 api_router.include_router(staff_members.router)
 api_router.include_router(players.router)
-#api_router.include_router(teams.router)
+api_router.include_router(teams.router)
+api_router.include_router(staff_team_history.router)
 #api_router.include_router(player_team_history.router)
 # TODO: other routers
 

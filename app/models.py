@@ -101,10 +101,18 @@ class Team(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False, unique=True)
-    team_type = Column("type", SQLAlchemyEnum(TeamType), nullable=False)
+    team_type = Column("team_type", SQLAlchemyEnum(TeamType), nullable=False)
     country_code = Column(CHAR(2), ForeignKey("countries.code"), nullable=False)
     home_arena_id = Column(UUID(as_uuid=True), ForeignKey("arenas.id"), nullable=True)
-    head_coach_id = Column(UUID(as_uuid=True), ForeignKey("staff_members.id"), nullable=True)
     logo_url = Column(String)
     website_url = Column(String)
     email = Column(String)
+
+class StaffTeamHistory(Base):
+    __tablename__ = "staff_team_history"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    role = Column(String, nullable=False)
+    staff_member_id = Column(UUID(as_uuid=True), ForeignKey("staff_members.id"), nullable=False)
+    team_id = Column(UUID(as_uuid=True), ForeignKey("teams.id"), nullable=False)
+    season_id = Column(UUID(as_uuid=True), ForeignKey("seasons.id"), nullable=False)

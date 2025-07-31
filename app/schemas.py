@@ -161,7 +161,6 @@ class TeamBase(BaseModel):
     team_type: TeamType
     country_code: str
     home_arena_id: UUID | None = None
-    head_coach_id: UUID | None = None
     logo_url: str | None = None
     website_url: str | None = None
     email: str | None = None
@@ -174,7 +173,6 @@ class TeamUpdate(BaseModel):
     team_type: TeamType | None = None
     country_code: str | None = None
     home_arena_id: UUID | None = None
-    head_coach_id: UUID | None = None
     logo_url: str | None = None
     website_url: str | None = None
     email: str | None = None
@@ -182,6 +180,26 @@ class TeamUpdate(BaseModel):
 class Team(TeamBase):
     id: UUID
 
+    class Config:
+        from_attributes = True
+
+# ==== Staff-Team History schema ====
+
+class StaffTeamHistoryBase(BaseModel):
+    staff_member_id: UUID
+    team_id: UUID
+    season_id: UUID
+    role: str
+
+class StaffTeamHistoryCreate(StaffTeamHistoryBase):
+    pass
+
+class StaffTeamHistoryUpdate(BaseModel):
+    role: str | None = None
+
+class StaffTeamHistory(StaffTeamHistoryBase):
+    id: UUID
+    
     class Config:
         from_attributes = True
 

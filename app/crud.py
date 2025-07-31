@@ -180,7 +180,83 @@ def delete_player(db: Session, player_id: UUID):
 
 # ==== Team CRUD ====
 
-# TODO
+def get_team(db: Session, team_id: UUID):
+    return db.query(models.Team).filter(models.Team.id == team_id).first()
+
+def get_teams(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Team).offset(skip).limit(limit).all()
+
+def create_team(db: Session, team: schemas.TeamCreate):
+    db_team = models.Team(**team.model_dump())
+    db.add(db_team)
+    db.commit()
+    db.refresh(db_team)
+    return db_team
+
+def update_team(db: Session, team_id: UUID, team_update: schemas.TeamUpdate):
+    db_team = get_team(db, team_id=team_id)
+    if not db_team:
+        return None
+    
+    update_data = team_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_team, key, value)
+
+    db.add(db_team)
+    db.commit()
+    db.refresh(db_team)
+
+    return db_team
+
+def delete_team(db: Session, team_id: UUID):
+    db_team = get_team(db, team_id=team_id)
+    if not db_team:
+        return None
+    
+    db.delete(db_team)
+    db.commit()
+    
+    return db_team
+
+# ==== Staff-Team History CRUD ====
+
+def get_staff_team_history(db: Session, staff_team_history_id: UUID):
+    return db.query(models.StaffTeamHistory).filter(models.StaffTeamHistory.id == staff_team_history_id).first()
+
+def get_staff_team_histories(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.StaffTeamHistory).offset(skip).limit(limit).all()
+
+def create_staff_team_history(db: Session, staff_team_history: schemas.StaffTeamHistoryCreate):
+    db_staff_team_history = models.StaffTeamHistory(**staff_team_history.model_dump())
+    db.add(db_staff_team_history)
+    db.commit()
+    db.refresh(db_staff_team_history)
+    return db_staff_team_history
+
+def update_staff_team_history(db: Session, staff_team_history_id: UUID, staff_team_history_update: schemas.StaffTeamHistoryUpdate):
+    db_staff_team_history = get_staff_team_history(db, staff_team_history_id=staff_team_history_id)
+    if not db_staff_team_history:
+        return None
+    
+    update_data = staff_team_history_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_staff_team_history, key, value)
+
+    db.add(db_staff_team_history)
+    db.commit()
+    db.refresh(db_staff_team_history)
+
+    return db_staff_team_history
+
+def delete_staff_team_history(db: Session, staff_team_history_id: UUID):
+    db_staff_team_history = get_staff_team_history(db, staff_team_history_id=staff_team_history_id)
+    if not db_staff_team_history:
+        return None
+    
+    db.delete(db_staff_team_history)
+    db.commit()
+    
+    return db_staff_team_history
 
 # ==== Player-Team History CRUD ====
 
