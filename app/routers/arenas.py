@@ -1,50 +1,45 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session
 from uuid import UUID
+from typing import List
 
-from .. import crud, schemas
-from ..database import get_db
+from .. import crud, models
+from ..database import get_session
+
 
 router = APIRouter(
     prefix="/arenas",
-    tags=["Arenas"]
+    tags=["Arenas"],
 )
 
-@router.post("/", response_model=schemas.Arena)
-def create_arena(arena: schemas.ArenaCreate, db: Session = Depends(get_db)):
-    try:
-        return crud.create_arena(db=db, arena=arena)
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=409,
-            detail=f"Arena with name '{arena.name}' already exists."
-        )
+@router.post("/", response_model=models.ArenaRead, status_code=status.HTTP_201_CREATED)
+def create_arena(arena: models.ArenaCreate, session: Session = Depends(get_session)):
+    return crud.create_arena(session=session, arena=arena)
 
-@router.get("/", response_model=List[schemas.Arena])
-def read_arenas(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    arenas = crud.get_arenas(db, skip=skip, limit=limit)
-    return arenas
+@router.get("/", response_model=List[models.ArenaRead])
+def read_arenas(skip: int = 0, limit: int = 100, session: Session = Depends(get_session)):
+    return crud.get_arenas(session=session, skip=skip, limit=limit)
 
-@router.get("/{arena_id}", response_model=schemas.Arena)
-def read_arena(arena_id: UUID, db: Session = Depends(get_db)):
-    db_arena = crud.get_arena(db, arena_id=arena_id)
+@router.get("/{arena_id}", response_model=models.ArenaReadWithCountry)
+def read_arena(arena_id: UUID, session: Session = Depends(get_session)):
+    db_arena = crud.get_arena(session=session, arena_id=arena_id)
     if db_arena is None:
         raise HTTPException(status_code=404, detail="Arena not found")
     return db_arena
 
-@router.put("/{arena_id}", response_model=schemas.Arena)
-def update_arena(arena_id: UUID, arena: schemas.ArenaUpdate, db: Session = Depends(get_db)):
-    db_arena = crud.update_arena(db, arena_id=arena_id, arena_update=arena)
+@router.patch("/{arena_id}", response_model=models.ArenaRead)
+def update_arena(arena_id: UUID, arena_update: models.ArenaUpdate, session: Session = Depends(get_session)):
+    db_arena = session.get(models.Arena, arena_id)
     if db_arena is None:
         raise HTTPException(status_code=404, detail="Arena not found")
-    return db_arena
+    
+    return crud.update_arena(session=session, db_arena=db_arena, arena_update=arena_update)
 
-@router.delete("/{arena_id}", response_model=schemas.Arena)
-def delete_arena(arena_id: UUID, db: Session = Depends(get_db)):
-    db_arena = crud.delete_arena(db, arena_id=arena_id)
+@router.delete("/{arena_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_arena(arena_id: UUID, session: Session = Depends(get_session)):
+    db_arena = session.get(models.Arena, arena_id)
     if db_arena is None:
         raise HTTPException(status_code=404, detail="Arena not found")
-    return db_arena
+    
+    crud.delete_arena(session=session, db_arena=db_arena)
+    return

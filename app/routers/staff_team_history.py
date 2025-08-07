@@ -1,50 +1,42 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session
 from uuid import UUID
+from typing import List, Optional
 
-from .. import crud, schemas
-from ..database import get_db
+from .. import crud, models
+from ..database import get_session
+
 
 router = APIRouter(
     prefix="/staff-team-history",
-    tags=["Staff-Team History"]
+    tags=["Staff-Team History"],
 )
 
-@router.post("/", response_model=schemas.StaffTeamHistory)
-def create_staff_team_history(staff_team_history: schemas.StaffTeamHistoryCreate, db: Session = Depends(get_db)):
-    try:
-        return crud.create_staff_team_history(db=db, staff_team_history=staff_team_history)
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(
-            status_code=409,
-            detail="Staff-Team History already exists."
-        )
+@router.post("/", response_model=models.StaffTeamHistoryRead, status_code=status.HTTP_201_CREATED)
+def create_staff_team_history(history: models.StaffTeamHistoryCreate, session: Session = Depends(get_session)):
+    return crud.create_staff_team_history(session=session, history=history)
 
-@router.get("/", response_model=List[schemas.StaffTeamHistory])
-def read_staff_team_histories(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    staff_team_histories = crud.get_staff_team_histories(db, skip=skip, limit=limit)
-    return staff_team_histories
+@router.get("/", response_model=List[models.StaffTeamHistoryRead])
+def read_staff_team_histories(
+    skip: int = 0, 
+    limit: int = 100, 
+    staff_member_id: Optional[UUID] = None,
+    team_id: Optional[UUID] = None,
+    season_id: Optional[UUID] = None,
+    session: Session = Depends(get_session)
+):
+    return crud.get_staff_team_histories(
+        session=session, 
+        skip=skip, 
+        limit=limit,
+        staff_member_id=staff_member_id,
+        team_id=team_id,
+        season_id=season_id
+    )
 
-@router.get("/{staff_team_history_id}", response_model=schemas.StaffTeamHistory)
-def read_staff_team_history(staff_team_history_id: UUID, db: Session = Depends(get_db)):
-    db_staff_team_history = crud.get_staff_team_history(db, staff_team_history_id=staff_team_history_id)
-    if db_staff_team_history is None:
-        raise HTTPException(status_code=404, detail="Staff-Team History not found")
-    return db_staff_team_history
-
-@router.put("/{staff_team_history_id}", response_model=schemas.StaffTeamHistory)
-def update_staff_team_history(staff_team_history_id: UUID, staff_team_history: schemas.StaffTeamHistoryUpdate, db: Session = Depends(get_db)):
-    db_staff_team_history = crud.update_staff_team_history(db, staff_team_history_id=staff_team_history_id, staff_team_history_update=staff_team_history)
-    if db_staff_team_history is None:
-        raise HTTPException(status_code=404, detail="Staff-Team History not found")
-    return db_staff_team_history
-
-@router.delete("/{staff_team_history_id}", response_model=schemas.StaffTeamHistory)
-def delete_staff_team_history(staff_team_history_id: UUID, db: Session = Depends(get_db)):
-    db_staff_team_history = crud.delete_staff_team_history(db, staff_team_history_id=staff_team_history_id)
-    if db_staff_team_history is None:
-        raise HTTPException(status_code=404, detail="Staff-Team History not found")
-    return db_staff_team_history
+@router.get("/{history_id}", response_model=models.StaffTeamHistoryReadWithDetails)
+def read_staff_team_history(history_id: UUID, session: Session = Depends(get_session)):
+    db_history = crud.get_staff_team_history(session=session, history_id=history_id)
+    if db_history is None:
+        raise HTTPException(status_code=404, detail="History record not found")
+    return db_history
