@@ -61,10 +61,10 @@ class Country(CountryBase, table=True):
     __tablename__ = "countries"
 
     # Relationships
-    arenas: List["Arena"] = Relationship(back_populates="country_code")
-    staff_members: List["StaffMember"] = Relationship(back_populates="nationality_code")
-    players: List["Player"] = Relationship(back_populates="nationality_code")
-    teams: List["Team"] = Relationship(back_populates="country_code")
+    arenas: List["Arena"] = Relationship(back_populates="country")
+    staff_members: List["StaffMember"] = Relationship(back_populates="nationality")
+    players: List["Player"] = Relationship(back_populates="nationality")
+    teams: List["Team"] = Relationship(back_populates="country")
 
 class CountryCreate(CountryBase):
     pass
@@ -122,7 +122,7 @@ class Arena(ArenaBase, table=True):
 
     # Relationships
     country: Country = Relationship(back_populates="arenas")
-    home_teams: List["Team"] = Relationship(back_populates="home_arena_id")
+    home_teams: List["Team"] = Relationship(back_populates="home_arena")
 
 class ArenaCreate(ArenaBase):
     pass
@@ -157,7 +157,7 @@ class StaffMember(StaffMemberBase, table=True):
 
     # Relationships
     nationality: Country = Relationship(back_populates="staff_members")
-    team_histories: List["StaffTeamHistory"] = Relationship(back_populates="staff_member_id")
+    team_histories: List["StaffTeamHistory"] = Relationship(back_populates="staff_member")
 
 class StaffMemberCreate(StaffMemberBase):
     pass
@@ -243,7 +243,7 @@ class Team(TeamBase, table=True):
     # Relationships
     country: Country = Relationship(back_populates="teams")
     home_arena: Optional[Arena] = Relationship(back_populates="home_teams")
-    staff_histories: List["StaffTeamHistory"] = Relationship(back_populates="team_id")
+    staff_histories: List["StaffTeamHistory"] = Relationship(back_populates="team")
     player_histories: List["PlayerTeamHistory"] = Relationship(back_populates="team")
 
 class TeamCreate(TeamBase):

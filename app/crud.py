@@ -1,4 +1,5 @@
-from sqlmodel import Session, select, selectinload
+from sqlmodel import Session, select
+from sqlalchemy.orm import selectinload
 from uuid import UUID
 
 from . import models

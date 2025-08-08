@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("/", response_model=models.CountryRead, status_code=status.HTTP_201_CREATED)
 def create_country(country: models.CountryCreate, session: Session = Depends(get_session)):
-    db_country = crud.get_country(session, country_code=country.code)
+    db_country = crud.get_country(session, country_code=country.alpha_2_code)
     if db_country:
         raise HTTPException(status_code=400, detail="Country with this code already exists")
     return crud.create_country(session=session, country=country)
