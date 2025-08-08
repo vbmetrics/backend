@@ -2,20 +2,17 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import (
+    arenas,
     countries,
-    seasons, 
-    arenas, 
-    staff_members, 
-    players, 
-    teams, 
+    player_team_history,
+    players,
+    seasons,
+    staff_members,
     staff_team_history,
-    player_team_history
+    teams,
 )
 
-
-app = FastAPI(
-    title="vbmetrics API"
-)
+app = FastAPI(title="vbmetrics API")
 
 origins = [
     "http://localhost",
@@ -44,6 +41,7 @@ api_router.include_router(player_team_history.router)
 
 app.include_router(api_router)
 
+
 @app.get("/")
 def read_root():
-    return { "message": "Welcome to vbmetrics API!" }
+    return {"message": "Welcome to vbmetrics API!"}
