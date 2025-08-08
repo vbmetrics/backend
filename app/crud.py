@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from uuid import UUID
 
 from sqlalchemy.orm import selectinload
@@ -14,7 +15,7 @@ def get_country(session: Session, country_code: str) -> models.Country | None:
 
 def get_countries(
     session: Session, skip: int = 0, limit: int = 100
-) -> list[models.Country]:
+) -> Sequence[models.Country]:
     statement = select(models.Country).offset(skip).limit(limit)
     return session.exec(statement).all()
 
@@ -54,7 +55,7 @@ def get_season(session: Session, season_id: UUID) -> models.Season | None:
 
 def get_seasons(
     session: Session, skip: int = 0, limit: int = 100
-) -> list[models.Season]:
+) -> Sequence[models.Season]:
     statement = select(models.Season).offset(skip).limit(limit)
     results = session.exec(statement)
     return results.all()
@@ -93,12 +94,14 @@ def get_arena(session: Session, arena_id: UUID) -> models.Arena | None:
     statement = (
         select(models.Arena)
         .where(models.Arena.id == arena_id)
-        .options(selectinload(models.Arena.country))
+        .options(selectinload(models.Arena.country))  # type: ignore[arg-type]
     )
     return session.exec(statement).first()
 
 
-def get_arenas(session: Session, skip: int = 0, limit: int = 100) -> list[models.Arena]:
+def get_arenas(
+    session: Session, skip: int = 0, limit: int = 100
+) -> Sequence[models.Arena]:
     statement = select(models.Arena).offset(skip).limit(limit)
     return session.exec(statement).all()
 
@@ -138,14 +141,14 @@ def get_staff_member(
     statement = (
         select(models.StaffMember)
         .where(models.StaffMember.id == staff_member_id)
-        .options(selectinload(models.StaffMember.nationality))
+        .options(selectinload(models.StaffMember.nationality))  # type: ignore[arg-type]
     )
     return session.exec(statement).first()
 
 
 def get_staff_members(
     session: Session, skip: int = 0, limit: int = 100
-) -> list[models.StaffMember]:
+) -> Sequence[models.StaffMember]:
     statement = select(models.StaffMember).offset(skip).limit(limit)
     return session.exec(statement).all()
 
@@ -187,14 +190,14 @@ def get_player(session: Session, player_id: UUID) -> models.Player | None:
     statement = (
         select(models.Player)
         .where(models.Player.id == player_id)
-        .options(selectinload(models.Player.nationality))
+        .options(selectinload(models.Player.nationality))  # type: ignore[arg-type]
     )
     return session.exec(statement).first()
 
 
 def get_players(
     session: Session, skip: int = 0, limit: int = 100
-) -> list[models.Player]:
+) -> Sequence[models.Player]:
     statement = select(models.Player).offset(skip).limit(limit)
     return session.exec(statement).all()
 
@@ -233,13 +236,16 @@ def get_team(session: Session, team_id: UUID) -> models.Team | None:
         select(models.Team)
         .where(models.Team.id == team_id)
         .options(
-            selectinload(models.Team.country), selectinload(models.Team.home_arena)
+            selectinload(models.Team.country),  # type: ignore[arg-type]
+            selectinload(models.Team.home_arena),  # type: ignore[arg-type]
         )
     )
     return session.exec(statement).first()
 
 
-def get_teams(session: Session, skip: int = 0, limit: int = 100) -> list[models.Team]:
+def get_teams(
+    session: Session, skip: int = 0, limit: int = 100
+) -> Sequence[models.Team]:
     statement = select(models.Team).offset(skip).limit(limit)
     return session.exec(statement).all()
 
@@ -280,9 +286,9 @@ def get_staff_team_history(
         select(models.StaffTeamHistory)
         .where(models.StaffTeamHistory.id == history_id)
         .options(
-            selectinload(models.StaffTeamHistory.staff_member),
-            selectinload(models.StaffTeamHistory.team),
-            selectinload(models.StaffTeamHistory.season),
+            selectinload(models.StaffTeamHistory.staff_member),  # type: ignore[arg-type]
+            selectinload(models.StaffTeamHistory.team),  # type: ignore[arg-type]
+            selectinload(models.StaffTeamHistory.season),  # type: ignore[arg-type]
         )
     )
     return session.exec(statement).first()
@@ -295,7 +301,7 @@ def get_staff_team_histories(
     staff_member_id: UUID | None = None,
     team_id: UUID | None = None,
     season_id: UUID | None = None,
-) -> list[models.StaffTeamHistory]:
+) -> Sequence[models.StaffTeamHistory]:
     statement = select(models.StaffTeamHistory)
 
     if staff_member_id:
@@ -331,9 +337,9 @@ def get_player_team_history(
         select(models.PlayerTeamHistory)
         .where(models.PlayerTeamHistory.id == history_id)
         .options(
-            selectinload(models.PlayerTeamHistory.player),
-            selectinload(models.PlayerTeamHistory.team),
-            selectinload(models.PlayerTeamHistory.season),
+            selectinload(models.PlayerTeamHistory.player),  # type: ignore[arg-type]
+            selectinload(models.PlayerTeamHistory.team),  # type: ignore[arg-type]
+            selectinload(models.PlayerTeamHistory.season),  # type: ignore[arg-type]
         )
     )
     return session.exec(statement).first()
@@ -346,7 +352,7 @@ def get_player_team_histories(
     player_id: UUID | None = None,
     team_id: UUID | None = None,
     season_id: UUID | None = None,
-) -> list[models.PlayerTeamHistory]:
+) -> Sequence[models.PlayerTeamHistory]:
     statement = select(models.PlayerTeamHistory)
 
     if player_id:

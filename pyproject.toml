@@ -18,3 +18,7 @@ python_version = "3.13"
 warn_return_any = true
 ignore_missing_imports = true
 exclude = ["venv", "alembic/versions"]
+
+plugins = [
+    "sqlalchemy.ext.mypy.plugin"
+]
