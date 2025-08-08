@@ -1,5 +1,7 @@
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 
 from .routers import (
     arenas,
@@ -40,6 +42,14 @@ api_router.include_router(player_team_history.router)
 # TODO: other routers
 
 app.include_router(api_router)
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_error_exception_handler(request: Request, exc: IntegrityError):
+    return JSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content={"detail": f"Database integrity error: {exc.orig}"},
+    )
 
 
 @app.get("/")
