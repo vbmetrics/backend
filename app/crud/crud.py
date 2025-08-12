@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
-from . import models
+from .. import models
 
 # COUNTRY CRUD
 

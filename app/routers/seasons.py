@@ -3,8 +3,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from .. import crud, models
-from ..database import get_session
+from ..crud import crud
+
+from .. import models
+from ..db.database import get_session
 
 router = APIRouter(prefix="/seasons", tags=["Seasons"])
 
