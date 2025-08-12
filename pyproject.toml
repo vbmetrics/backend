@@ -1,3 +1,26 @@
+[project]
+name = "vbmetrics"
+version = "0.1"
+# pip install .
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlmodel",
+    "alembic",
+    "psycopg",
+    "python-dotenv",
+    "email_validator",
+    "sentry-sdk",
+    "orjson",
+]
+
+[project.optional-dependencies]
+# pip install -e .[dev]
+dev = [
+    "pytest",
+    "ruff",
+    "mypy",
+]
 
 [tool.pytest.ini_options]
 pythonpath = [

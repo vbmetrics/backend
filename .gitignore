@@ -2,32 +2,32 @@
 .DS_Store
 Thumbs.db
 
-# virtual environment
+# virtual environment and secrets
 venv/
 *.venv/
 env/
-*.env/
-
-# secrets
 .env
+.env.*
+*.env
 
 # cache and temporary
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
 
 # tools
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 build/
 dist/
 *.egg-info/
 
 # test database
-test.db
+*.db
 *.sqlite
 *.sqlite3
+test.db
 
 # IDE specific
 .idea/
