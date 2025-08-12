@@ -1,18 +1,9 @@
-from fastapi import APIRouter, FastAPI, Request, status
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 
-from .routers import (
-    arenas,
-    countries,
-    player_team_history,
-    players,
-    seasons,
-    staff_members,
-    staff_team_history,
-    teams,
-)
+from app.api.v1 import api_router as api_v1_router
 
 app = FastAPI(title="vbmetrics API")
 
@@ -29,19 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-api_router = APIRouter(prefix="/api/v1")
-
-api_router.include_router(countries.router)
-api_router.include_router(seasons.router)
-api_router.include_router(arenas.router)
-api_router.include_router(staff_members.router)
-api_router.include_router(players.router)
-api_router.include_router(teams.router)
-api_router.include_router(staff_team_history.router)
-api_router.include_router(player_team_history.router)
-# TODO: other routers
-
-app.include_router(api_router)
+app.include_router(api_v1_router, prefix="/api/v1")
 
 
 @app.exception_handler(IntegrityError)
