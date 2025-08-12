@@ -6,25 +6,25 @@ from sqlmodel import Session, select
 
 from app.crud.base import CRUDBase
 from app.models import (
-    PlayerTeamHistory,
-    PlayerTeamHistoryCreate,
-    PlayerTeamHistoryUpdate,
+    StaffTeamHistory,
+    StaffTeamHistoryCreate,
+    StaffTeamHistoryUpdate,
 )
 
 
-class CRUDPlayerTeamHistory(
-    CRUDBase[PlayerTeamHistory, PlayerTeamHistoryCreate, PlayerTeamHistoryUpdate]
+class CRUDStaffTeamHistory(
+    CRUDBase[StaffTeamHistory, StaffTeamHistoryCreate, StaffTeamHistoryUpdate]
 ):
-    def get(self, db: Session, id: UUID) -> PlayerTeamHistory | None:
+    def get(self, db: Session, id: UUID) -> StaffTeamHistory | None:
         """
         Overwrites get method to add eager loading
-        for 'player', 'team' and 'season' relationship.
+        for 'staff_member', 'team' and 'season' relationship.
         """
         statement = (
             select(self.model)
             .where(self.model.id == id)
             .options(
-                selectinload(self.model.player),  # type: ignore[arg-type]
+                selectinload(self.model.staff_member),  # type: ignore[arg-type]
                 selectinload(self.model.team),  # type: ignore[arg-type]
                 selectinload(self.model.season),  # type: ignore[arg-type]
             )
@@ -37,17 +37,17 @@ class CRUDPlayerTeamHistory(
         *,
         skip: int = 0,
         limit: int = 100,
-        player_id: UUID | None = None,
+        staff_member_id: UUID | None = None,
         team_id: UUID | None = None,
         season_id: UUID | None = None,
-    ) -> Sequence[PlayerTeamHistory]:
+    ) -> Sequence[StaffTeamHistory]:
         """
         Overwrites get_multi method to add dynamic filters.
         """
         statement = select(self.model)
 
-        if player_id:
-            statement = statement.where(self.model.player_id == player_id)
+        if staff_member_id:
+            statement = statement.where(self.model.staff_member_id == staff_member_id)
         if team_id:
             statement = statement.where(self.model.team_id == team_id)
         if season_id:
@@ -57,4 +57,4 @@ class CRUDPlayerTeamHistory(
         return db.exec(statement).all()
 
 
-player_team_history = CRUDPlayerTeamHistory(PlayerTeamHistory)
+staff_team_history = CRUDStaffTeamHistory(StaffTeamHistory)

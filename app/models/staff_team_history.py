@@ -36,6 +36,10 @@ class StaffTeamHistoryRead(StaffTeamHistoryBase):
     id: UUID
 
 
+class StaffTeamHistoryUpdate(SQLModel):
+    role: Optional[str] = None
+
+
 class StaffTeamHistoryReadWithDetails(StaffTeamHistoryRead):
     staff_member: Optional[StaffMemberRead] = None
     team: Optional[TeamRead] = None
