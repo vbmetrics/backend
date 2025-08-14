@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 
 def test_create_player_with_valid_nationality(client: TestClient):
     client.post(
-        "/api/v1/countries/",
+        "/api/v1/country/",
         json={
             "name": "Brazil",
             "alpha_2_code": "BR",
@@ -13,7 +13,7 @@ def test_create_player_with_valid_nationality(client: TestClient):
     )
 
     response = client.post(
-        "/api/v1/players/",
+        "/api/v1/player/",
         json={
             "first_name": "Giba",
             "last_name": "Godoy",
@@ -34,7 +34,7 @@ def test_create_player_with_valid_nationality(client: TestClient):
 
 def test_create_player_with_nonexistent_nationality_fails(client: TestClient):
     response = client.post(
-        "/api/v1/players/",
+        "/api/v1/player/",
         json={
             "first_name": "John",
             "last_name": "Doe",
@@ -50,13 +50,13 @@ def test_create_player_with_nonexistent_nationality_fails(client: TestClient):
 def test_get_player_by_id_returns_404_for_nonexistent(client: TestClient):
     # 404 error handling
     non_existent_uuid = "a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"
-    response = client.get(f"/api/v1/players/{non_existent_uuid}")
+    response = client.get(f"/api/v1/player/{non_existent_uuid}")
     assert response.status_code == 404
 
 
 def test_update_player(client: TestClient):
     client.post(
-        "/api/v1/countries/",
+        "/api/v1/country/",
         json={
             "name": "Poland",
             "alpha_2_code": "PL",
@@ -66,7 +66,7 @@ def test_update_player(client: TestClient):
     )
 
     response = client.post(
-        "/api/v1/players/",
+        "/api/v1/player/",
         json={
             "first_name": "Bartosz",
             "last_name": "Kurek",
@@ -88,7 +88,7 @@ def test_update_player(client: TestClient):
 
 def test_update_player_with_nonexistent_nationality_fails(client: TestClient):
     client.post(
-        "/api/v1/countries/",
+        "/api/v1/country/",
         json={
             "name": "Poland",
             "alpha_2_code": "PL",
@@ -98,7 +98,7 @@ def test_update_player_with_nonexistent_nationality_fails(client: TestClient):
     )
 
     response = client.post(
-        "/api/v1/players/",
+        "/api/v1/player/",
         json={
             "first_name": "Bartosz",
             "last_name": "Kurek",
@@ -110,7 +110,7 @@ def test_update_player_with_nonexistent_nationality_fails(client: TestClient):
     player_id = response.json()["id"]
 
     response = client.patch(
-        f"/api/v1/players/{player_id}", json={"nationality_code": "XX"}
+        f"/api/v1/player/{player_id}", json={"nationality_code": "XX"}
     )
 
     assert response.status_code == 409
