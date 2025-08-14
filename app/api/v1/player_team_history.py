@@ -1,12 +1,11 @@
-from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
-from .. import models
-from ..crud import crud
-from ..db.database import get_session
+from app import models
+from app.api import deps
+from app.services import player_team_history_service
 
 router = APIRouter(
     prefix="/player-team-history",
@@ -19,50 +18,50 @@ router = APIRouter(
     response_model=models.PlayerTeamHistoryRead,
     status_code=status.HTTP_201_CREATED,
 )
-def create_player_team_history(
-    history: models.PlayerTeamHistoryCreate, session: Session = Depends(get_session)
+def create_player_team_history_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    history_in: models.PlayerTeamHistoryCreate,
 ):
-    return crud.create_player_team_history(session=session, history=history)
+    return player_team_history_service.create(db=db, history_in=history_in)
 
 
-@router.get("/", response_model=list[models.PlayerTeamHistoryReadWithDetails])
-def read_player_team_histories(
+@router.get("/", response_model=list[models.PlayerTeamHistoryRead])
+def read_player_team_histories_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    player_id: Optional[UUID] = None,
-    team_id: Optional[UUID] = None,
-    season_id: Optional[UUID] = None,
-    session: Session = Depends(get_session),
 ):
-    histories = crud.get_player_team_histories(
-        session=session,
-        skip=skip,
-        limit=limit,
-        player_id=player_id,
-        team_id=team_id,
-        season_id=season_id,
-    )
-    return histories
+    return player_team_history_service.get_all(db=db, skip=skip, limit=limit)
 
 
-@router.get("/{history_id}", response_model=models.PlayerTeamHistoryReadWithDetails)
-def read_player_team_history(history_id: UUID, session: Session = Depends(get_session)):
-    db_history = crud.get_player_team_history(session=session, history_id=history_id)
-    if db_history is None:
-        raise HTTPException(status_code=404, detail="History record not found")
-    return db_history
+@router.get("/{history_id}", response_model=models.PlayerTeamHistoryRead)
+def read_player_team_history_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    history_id: UUID,
+):
+    return player_team_history_service.get_by_id(db=db, history_id=history_id)
 
 
 @router.patch("/{history_id}", response_model=models.PlayerTeamHistoryRead)
-def update_player_team_history(
+def update_player_team_history_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
     history_id: UUID,
-    history_update: models.PlayerTeamHistoryUpdate,
-    session: Session = Depends(get_session),
+    history_in: models.PlayerTeamHistoryUpdate,
 ):
-    db_history = session.get(models.PlayerTeamHistory, history_id)
-    if db_history is None:
-        raise HTTPException(status_code=404, detail="History record not found")
-
-    return crud.update_player_team_history(
-        session=session, db_history=db_history, history_update=history_update
+    return player_team_history_service.update(
+        db=db, history_id=history_id, history_in=history_in
     )
+
+
+@router.delete("/{history_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_player_team_history_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    history_id: UUID,
+):
+    player_team_history_service.delete(db=db, history_id=history_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
