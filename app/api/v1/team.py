@@ -1,62 +1,60 @@
-from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
-from .. import models
-from ..crud import crud
-from ..db.database import get_session
+from app import models
+from app.api import deps
+from app.services import team_service
 
 router = APIRouter(
-    prefix="/teams",
-    tags=["Teams"],
+    prefix="/team",
+    tags=["Team"],
 )
 
 
-class TeamReadWithDetails(models.TeamRead):
-    country: Optional[models.CountryRead] = None
-    home_arena: Optional[models.ArenaRead] = None
-
-
 @router.post("/", response_model=models.TeamRead, status_code=status.HTTP_201_CREATED)
-def create_team(team: models.TeamCreate, session: Session = Depends(get_session)):
-    return crud.create_team(session=session, team=team)
+def create_team_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    team_in: models.TeamCreate,
+):
+    return team_service.create(db=db, team_in=team_in)
 
 
 @router.get("/", response_model=list[models.TeamRead])
-def read_teams(
-    skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
+def get_teams_endpoint(
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
 ):
-    return crud.get_teams(session=session, skip=skip, limit=limit)
+    return team_service.get_all(db=db, skip=skip, limit=limit)
 
 
-@router.get("/{team_id}", response_model=TeamReadWithDetails)
-def read_team(team_id: UUID, session: Session = Depends(get_session)):
-    db_team = crud.get_team(session=session, team_id=team_id)
-    if db_team is None:
-        raise HTTPException(status_code=404, detail="Team not found")
-    return db_team
+@router.get("/{team_id}", response_model=models.TeamRead)
+def get_team_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    team_id: UUID,
+):
+    return team_service.get_by_id(db=db, team_id=team_id)
 
 
 @router.patch("/{team_id}", response_model=models.TeamRead)
-def update_team(
+def update_team_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
     team_id: UUID,
-    team_update: models.TeamUpdate,
-    session: Session = Depends(get_session),
+    team_in: models.TeamUpdate,
 ):
-    db_team = session.get(models.Team, team_id)
-    if db_team is None:
-        raise HTTPException(status_code=404, detail="Team not found")
-
-    return crud.update_team(session=session, db_team=db_team, team_update=team_update)
+    return team_service.update(db=db, team_id=team_id, team_in=team_in)
 
 
-@router.delete("/{team_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_team(team_id: UUID, session: Session = Depends(get_session)):
-    db_team = session.get(models.Team, team_id)
-    if db_team is None:
-        raise HTTPException(status_code=404, detail="Team not found")
-
-    crud.delete_team(session=session, db_team=db_team)
-    return
+@router.delete("/{team_id}", response_model=status.HTTP_204_NO_CONTENT)
+def delete_team_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    team_id: UUID,
+):
+    team_service.delete(db=db, team_id=team_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -46,6 +46,7 @@ from .staff_team_history import (
     StaffTeamHistoryCreate,
     StaffTeamHistoryRead,
     StaffTeamHistoryReadWithDetails,
+    StaffTeamHistoryUpdate,
 )
 from .team import (
     Team,
@@ -112,4 +113,5 @@ __all__ = [
     "StaffTeamHistoryCreate",
     "StaffTeamHistoryRead",
     "StaffTeamHistoryReadWithDetails",
+    "StaffTeamHistoryUpdate",
 ]
