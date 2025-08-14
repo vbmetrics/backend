@@ -57,8 +57,8 @@ class Player(PlayerBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
-    nationality: Country = Relationship(back_populates="player")
-    team_history: list["PlayerTeamHistory"] = Relationship(back_populates="player")
+    nationality: "Country" = Relationship(back_populates="players")
+    team_histories: list["PlayerTeamHistory"] = Relationship(back_populates="player")
 
 
 class PlayerCreate(PlayerBase):

@@ -29,8 +29,10 @@ class StaffMember(StaffMemberBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
-    nationality: Country = Relationship(back_populates="staff_member")
-    team_history: list[StaffTeamHistory] = Relationship(back_populates="staff_member")
+    nationality: "Country" = Relationship(back_populates="staff_members")
+    team_histories: list["StaffTeamHistory"] = Relationship(
+        back_populates="staff_member"
+    )
 
 
 class StaffMemberCreate(StaffMemberBase):

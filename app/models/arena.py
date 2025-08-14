@@ -24,8 +24,8 @@ class Arena(ArenaBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
-    country: Country = Relationship(back_populates="arena")
-    home_team: list[Team] = Relationship(back_populates="home_arena")
+    country: "Country" = Relationship(back_populates="arenas")
+    home_team: list["Team"] = Relationship(back_populates="home_arena")
 
 
 class ArenaCreate(ArenaBase):
@@ -37,7 +37,7 @@ class ArenaRead(ArenaBase):
 
 
 class ArenaReadWithCountry(ArenaRead):
-    country: Optional[CountryRead] = None
+    country: Optional["CountryRead"] = None
 
 
 class ArenaUpdate(SQLModel):

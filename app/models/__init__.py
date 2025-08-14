@@ -115,3 +115,6 @@ __all__ = [
     "StaffTeamHistoryReadWithDetails",
     "StaffTeamHistoryUpdate",
 ]
+
+ArenaReadWithCountry.model_rebuild()
+StaffTeamHistoryReadWithDetails.model_rebuild()
