@@ -3,13 +3,21 @@ from collections.abc import Generator
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import event
+from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.db.database import get_session
+from app.api import deps
 from app.main import app
 
-DATABASE_URL_TEST = "sqlite:///./test.db"
-engine = create_engine(DATABASE_URL_TEST, connect_args={"check_same_thread": False})
+SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+
+TestingSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine, class_=Session
+)
 
 
 @event.listens_for(engine, "connect")
@@ -19,28 +27,45 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 
-@pytest.fixture(scope="function", autouse=True)
-def create_test_tables():
-    # create tables before testing
+@pytest.fixture(scope="session", autouse=True)
+def create_test_tables() -> Generator[None, None, None]:
+    """
+    Fixture to create and drop test tables before and after all tests.
+    """
     SQLModel.metadata.create_all(engine)
     yield
-    # delete tables after testing
     SQLModel.metadata.drop_all(engine)
 
 
-@pytest.fixture(name="session")
-def session_fixture() -> Generator[Session, None, None]:
-    with Session(engine) as session:
-        yield session
+@pytest.fixture(scope="function")
+def db_session() -> Generator[Session, None, None]:
+    """
+    Fixture to prepare clean session for each test.
+    """
+    connection = engine.connect()
+    transaction = connection.begin()
+    session = TestingSessionLocal(bind=connection)
+
+    yield session
+
+    session.close()
+    if transaction.is_active:
+        transaction.rollback()
+    connection.close()
 
 
-@pytest.fixture(name="client")
-def client_fixture(session: Session) -> Generator[TestClient, None, None]:
-    def get_session_override() -> Session:
-        return session
+@pytest.fixture(scope="function")
+def client(db_session: Session) -> Generator[TestClient, None, None]:
+    """
+    Fixture to prepare test client with a clean database session for each test.
+    """
 
-    app.dependency_overrides[get_session] = get_session_override
+    def override_get_db() -> Generator[Session, None, None]:
+        yield db_session
 
-    yield TestClient(app)
+    app.dependency_overrides[deps.get_db] = override_get_db
+
+    with TestClient(app) as test_client:
+        yield test_client
 
     app.dependency_overrides.clear()

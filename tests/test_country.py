@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 
 def test_create_and_read_country(client: TestClient):
     response = client.post(
-        "/api/v1/countries/",
+        "/api/v1/country/",
         json={
             "name": "Poland",
             "alpha_2_code": "PL",
@@ -18,7 +18,7 @@ def test_create_and_read_country(client: TestClient):
     assert data["alpha_2_code"] == "PL"
 
     country_code = data["alpha_2_code"]
-    response = client.get(f"/api/v1/countries/{country_code}")
+    response = client.get(f"/api/v1/country/{country_code}")
 
     assert response.status_code == 200
     data = response.json()
