@@ -50,7 +50,7 @@ def update_team_endpoint(
     return team_service.update(db=db, team_id=team_id, team_in=team_in)
 
 
-@router.delete("/{team_id}", response_model=status.HTTP_204_NO_CONTENT)
+@router.delete("/{team_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_team_endpoint(
     *,
     db: Session = Depends(deps.get_db),

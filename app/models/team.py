@@ -34,10 +34,10 @@ class Team(TeamBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
-    country: Country = Relationship(back_populates="team")
-    home_arena: Optional[Arena] = Relationship(back_populates="home_team")
-    staff_history: list[StaffTeamHistory] = Relationship(back_populates="team")
-    player_history: list[PlayerTeamHistory] = Relationship(back_populates="team")
+    country: "Country" = Relationship(back_populates="teams")
+    home_arena: Optional["Arena"] = Relationship(back_populates="home_team")
+    staff_histories: list["StaffTeamHistory"] = Relationship(back_populates="team")
+    player_histories: list["PlayerTeamHistory"] = Relationship(back_populates="team")
 
 
 class TeamCreate(TeamBase):

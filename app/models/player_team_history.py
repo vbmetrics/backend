@@ -28,9 +28,9 @@ class PlayerTeamHistory(PlayerTeamHistoryBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
-    player: Player = Relationship(back_populates="team_history")
-    team: Team = Relationship(back_populates="player_history")
-    season: Season = Relationship(back_populates="player_team_history")
+    player: "Player" = Relationship(back_populates="team_histories")
+    team: "Team" = Relationship(back_populates="player_histories")
+    season: "Season" = Relationship(back_populates="player_team_histories")
 
 
 class PlayerTeamHistoryCreate(PlayerTeamHistoryBase):
@@ -48,6 +48,6 @@ class PlayerTeamHistoryUpdate(SQLModel):
 
 
 class PlayerTeamHistoryReadWithDetails(PlayerTeamHistoryRead):
-    player: Optional[PlayerRead] = None
-    team: Optional[TeamRead] = None
-    season: Optional[SeasonRead] = None
+    player: Optional["PlayerRead"] = None
+    team: Optional["TeamRead"] = None
+    season: Optional["SeasonRead"] = None

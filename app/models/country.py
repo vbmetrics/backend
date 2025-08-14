@@ -21,10 +21,10 @@ class Country(CountryBase, table=True):
     __tablename__ = "country"
 
     # Relationships
-    arena: list[Arena] = Relationship(back_populates="country")
-    staff_member: list[StaffMember] = Relationship(back_populates="nationality")
-    player: list[Player] = Relationship(back_populates="nationality")
-    team: list[Team] = Relationship(back_populates="country")
+    arenas: list["Arena"] = Relationship(back_populates="country")
+    staff_members: list["StaffMember"] = Relationship(back_populates="nationality")
+    players: list["Player"] = Relationship(back_populates="nationality")
+    teams: list["Team"] = Relationship(back_populates="country")
 
 
 class CountryCreate(CountryBase):
