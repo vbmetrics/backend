@@ -45,7 +45,7 @@ class CountryService:
 
     def delete(self, db: Session, country_code: str) -> models.Country:
         db_country = self.get_by_code(db=db, country_code=country_code)
-        return self.country_crud.remove(db=db, id=db_country.alpha_2_code)
+        return self.country_crud.remove(db=db, db_obj=db_country)
 
 
 country_service = CountryService(crud.country)

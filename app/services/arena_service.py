@@ -40,7 +40,7 @@ class ArenaService:
 
     def delete(self, db: Session, arena_id: UUID) -> models.Arena:
         db_arena = self.get_by_id(db=db, arena_id=arena_id)
-        return self.arena_crud.remove(db=db, id=db_arena.id)
+        return self.arena_crud.remove(db=db, db_obj=db_arena)
 
 
 arena_service = ArenaService(crud.arena)

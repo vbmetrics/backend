@@ -1,12 +1,11 @@
-from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
-from .. import models
-from ..crud import crud
-from ..db.database import get_session
+from app import models
+from app.api import deps
+from app.services import staff_team_history_service
 
 router = APIRouter(
     prefix="/staff-team-history",
@@ -17,34 +16,50 @@ router = APIRouter(
 @router.post(
     "/", response_model=models.StaffTeamHistoryRead, status_code=status.HTTP_201_CREATED
 )
-def create_staff_team_history(
-    history: models.StaffTeamHistoryCreate, session: Session = Depends(get_session)
+def create_staff_team_history_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    history_in: models.StaffTeamHistoryCreate,
 ):
-    return crud.create_staff_team_history(session=session, history=history)
+    return staff_team_history_service.create(db=db, history_in=history_in)
 
 
 @router.get("/", response_model=list[models.StaffTeamHistoryRead])
-def read_staff_team_histories(
+def read_staff_team_histories_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
-    staff_member_id: Optional[UUID] = None,
-    team_id: Optional[UUID] = None,
-    season_id: Optional[UUID] = None,
-    session: Session = Depends(get_session),
 ):
-    return crud.get_staff_team_histories(
-        session=session,
-        skip=skip,
-        limit=limit,
-        staff_member_id=staff_member_id,
-        team_id=team_id,
-        season_id=season_id,
+    return staff_team_history_service.get_all(db=db, skip=skip, limit=limit)
+
+
+@router.get("/{history_id}", response_model=models.StaffTeamHistoryRead)
+def read_staff_team_history_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    history_id: UUID,
+):
+    return staff_team_history_service.get_by_id(db=db, history_id=history_id)
+
+
+@router.patch("/{history_id}", response_model=models.StaffTeamHistoryRead)
+def update_staff_team_history_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    history_id: UUID,
+    history_in: models.StaffTeamHistoryUpdate,
+):
+    return staff_team_history_service.update(
+        db=db, history_id=history_id, history_in=history_in
     )
 
 
-@router.get("/{history_id}", response_model=models.StaffTeamHistoryReadWithDetails)
-def read_staff_team_history(history_id: UUID, session: Session = Depends(get_session)):
-    db_history = crud.get_staff_team_history(session=session, history_id=history_id)
-    if db_history is None:
-        raise HTTPException(status_code=404, detail="History record not found")
-    return db_history
+@router.delete("/{history_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_staff_team_history_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    history_id: UUID,
+):
+    staff_team_history_service.delete(db=db, history_id=history_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

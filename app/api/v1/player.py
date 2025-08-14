@@ -1,63 +1,58 @@
-from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
-from .. import models
-from ..crud import crud
-from ..db.database import get_session
+from app import models
+from app.api import deps
+from app.services import player_service
 
-router = APIRouter(
-    prefix="/players",
-    tags=["Players"],
-)
+router = APIRouter(prefix="/player", tags=["Player"])
 
 
-class PlayerReadWithNationality(models.PlayerRead):
-    nationality: Optional[models.CountryRead] = None
-
-
-@router.post("/", response_model=models.PlayerRead, status_code=status.HTTP_201_CREATED)
-def create_player(player: models.PlayerCreate, session: Session = Depends(get_session)):
-    return crud.create_player(session=session, player=player)
+@router.get("/", response_model=models.PlayerRead, status_code=status.HTTP_201_CREATED)
+def create_player_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    player_in: models.PlayerCreate,
+):
+    return player_service.create(db=db, player_in=player_in)
 
 
 @router.get("/", response_model=list[models.PlayerRead])
-def read_players(
-    skip: int = 0, limit: int = 100, session: Session = Depends(get_session)
+def read_players_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
 ):
-    return crud.get_players(session=session, skip=skip, limit=limit)
+    return player_service.get_all(db=db, skip=skip, limit=limit)
 
 
-@router.get("/{player_id}", response_model=PlayerReadWithNationality)
-def read_player(player_id: UUID, session: Session = Depends(get_session)):
-    db_player = crud.get_player(session=session, player_id=player_id)
-    if db_player is None:
-        raise HTTPException(status_code=404, detail="Player not found")
-    return db_player
+@router.get("/{player_id}", response_model=models.PlayerRead)
+def read_player_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    player_id: UUID,
+):
+    return player_service.get_by_id(db=db, player_id=player_id)
 
 
 @router.patch("/{player_id}", response_model=models.PlayerRead)
-def update_player(
+def update_player_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
     player_id: UUID,
-    player_update: models.PlayerUpdate,
-    session: Session = Depends(get_session),
+    player_in: models.PlayerUpdate,
 ):
-    db_player = session.get(models.Player, player_id)
-    if db_player is None:
-        raise HTTPException(status_code=404, detail="Player not found")
-
-    return crud.update_player(
-        session=session, db_player=db_player, player_update=player_update
-    )
+    return player_service.update(db=db, player_id=player_id, player_in=player_in)
 
 
 @router.delete("/{player_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_player(player_id: UUID, session: Session = Depends(get_session)):
-    db_player = session.get(models.Player, player_id)
-    if db_player is None:
-        raise HTTPException(status_code=404, detail="Player not found")
-
-    crud.delete_player(session=session, db_player=db_player)
-    return
+def delete_player_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    player_id: UUID,
+):
+    player_service.delete(db=db, player_id=player_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
