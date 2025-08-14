@@ -1,4 +1,3 @@
-
 # 0.0.0.0 means it's available from all network interfaces in container
 bind = "0.0.0.0:8000"
 

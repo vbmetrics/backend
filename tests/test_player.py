@@ -77,15 +77,7 @@ def test_update_player(client: TestClient):
 
     player_id = response.json()["id"]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    response = client.patch(f"/api/v1/players/{player_id}", json={ "height_cm": 205} )
-=======
-    response = client.patch(f"/api/v1/players/{player_id}", json={"height_cm": 205})
->>>>>>> feature/seeding
-=======
     response = client.patch(f"/api/v1/player/{player_id}", json={"height_cm": 205})
->>>>>>> feature/seeding
 
     assert response.status_code == 200
     data = response.json()
