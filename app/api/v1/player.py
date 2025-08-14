@@ -10,7 +10,7 @@ from app.services import player_service
 router = APIRouter(prefix="/player", tags=["Player"])
 
 
-@router.get("/", response_model=models.PlayerRead, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=models.PlayerRead, status_code=status.HTTP_201_CREATED)
 def create_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),
