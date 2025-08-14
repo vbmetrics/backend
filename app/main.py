@@ -5,7 +5,11 @@ from sqlalchemy.exc import IntegrityError
 
 from app.api.v1 import api_router as api_v1_router
 
-app = FastAPI(title="vbmetrics API")
+app = FastAPI(
+    title="vbmetrics API",
+    description="API for vbmetrics, a tool for analyzing volleyball data.",
+    version="1.0",
+)
 
 origins = [
     "http://localhost",

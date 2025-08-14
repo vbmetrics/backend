@@ -31,8 +31,12 @@ class Season(SeasonBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
-    staff_team_history: list[StaffTeamHistory] = Relationship(back_populates="season")
-    player_team_history: list[PlayerTeamHistory] = Relationship(back_populates="season")
+    staff_team_histories: list["StaffTeamHistory"] = Relationship(
+        back_populates="season"
+    )
+    player_team_histories: list["PlayerTeamHistory"] = Relationship(
+        back_populates="season"
+    )
 
 
 class SeasonCreate(SeasonBase):

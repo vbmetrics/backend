@@ -23,9 +23,9 @@ class StaffTeamHistory(StaffTeamHistoryBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
-    staff_member: StaffMember = Relationship(back_populates="team_history")
-    team: Team = Relationship(back_populates="staff_history")
-    season: Season = Relationship(back_populates="staff_team_history")
+    staff_member: "StaffMember" = Relationship(back_populates="team_histories")
+    team: "Team" = Relationship(back_populates="staff_histories")
+    season: "Season" = Relationship(back_populates="staff_team_histories")
 
 
 class StaffTeamHistoryCreate(StaffTeamHistoryBase):
@@ -41,6 +41,6 @@ class StaffTeamHistoryUpdate(SQLModel):
 
 
 class StaffTeamHistoryReadWithDetails(StaffTeamHistoryRead):
-    staff_member: Optional[StaffMemberRead] = None
-    team: Optional[TeamRead] = None
-    season: Optional[SeasonRead] = None
+    staff_member: Optional["StaffMemberRead"] = None
+    team: Optional["TeamRead"] = None
+    season: Optional["SeasonRead"] = None
