@@ -23,5 +23,9 @@ class CRUDTeam(CRUDBase[Team, TeamCreate, TeamUpdate]):
         )
         return db.exec(statement).first()
 
+    def get_by_name(self, db: Session, name: str) -> Team | None:
+        statement = select(self.model).where(self.model.name == name)
+        return db.exec(statement).first()
+
 
 team = CRUDTeam(Team)

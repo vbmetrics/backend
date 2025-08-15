@@ -19,5 +19,12 @@ class CRUDArena(CRUDBase[Arena, ArenaCreate, ArenaUpdate]):
         )
         return db.exec(statement).first()
 
+    def get_by_name(self, db: Session, name: str) -> Arena | None:
+        """
+        Get an arena by its name.
+        """
+        statement = select(self.model).where(self.model.name == name)
+        return db.exec(statement).first()
+
 
 arena = CRUDArena(Arena)

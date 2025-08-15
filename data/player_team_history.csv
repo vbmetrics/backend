@@ -1,1 +1,157 @@
-player_id,team_id,season_id,start_date,end_date,jersey_number
+jersey_number,first_name,last_name,season_name,start_date,end_date,team_name
+2,Luke,Herr,Paris 2024,2024-07-27,2024-08-10,Canada
+4,Nicholas,Hoag,Paris 2024,2024-07-27,2024-08-10,Canada
+5,Brodie,Hofer,Paris 2024,2024-07-27,2024-08-10,Canada
+6,Danny,Demyanenko,Paris 2024,2024-07-27,2024-08-10,Canada
+7,Stephen,Maar,Paris 2024,2024-07-27,2024-08-10,Canada
+8,Brett,Walsh,Paris 2024,2024-07-27,2024-08-10,Canada
+11,Xander,Ketrzynski,Paris 2024,2024-07-27,2024-08-10,Canada
+12,Lucas,Berkel,Paris 2024,2024-07-27,2024-08-10,Canada
+14,Arthur,Szwarc,Paris 2024,2024-07-27,2024-08-10,Canada
+18,Justin,Lui,Paris 2024,2024-07-27,2024-08-10,Canada
+33,Fynn,McCarthy,Paris 2024,2024-07-27,2024-08-10,Canada
+80,Eric,Loeppky,Paris 2024,2024-07-27,2024-08-10,Canada
+17,Ryley,Barnes,Paris 2024,2024-07-27,2024-08-10,Canada
+1,Barthélémy,Chinenyeze,Paris 2024,2024-07-27,2024-08-10,France
+2,Jenia,Grebennikov,Paris 2024,2024-07-27,2024-08-10,France
+4,Jean,Patry,Paris 2024,2024-07-27,2024-08-10,France
+6,Benjamin,Toniutti,Paris 2024,2024-07-27,2024-08-10,France
+7,Kévin,Tillie,Paris 2024,2024-07-27,2024-08-10,France
+9,Earvin,Ngapeth,Paris 2024,2024-07-27,2024-08-10,France
+11,Antoine,Brizard,Paris 2024,2024-07-27,2024-08-10,France
+14,Nicolas,Le Goff,Paris 2024,2024-07-27,2024-08-10,France
+17,Trévor,Clévenot,Paris 2024,2024-07-27,2024-08-10,France
+19,Yacine,Louati,Paris 2024,2024-07-27,2024-08-10,France
+21,Théo,Faure,Paris 2024,2024-07-27,2024-08-10,France
+25,Quentin,Jouffroy,Paris 2024,2024-07-27,2024-08-10,France
+23,Timothée,Carle,Paris 2024,2024-07-27,2024-08-10,France
+2,Uroš,Kovačević,Paris 2024,2024-07-27,2024-08-10,Serbia
+3,Milorad,Kapur,Paris 2024,2024-07-27,2024-08-10,Serbia
+7,Petar,Krsmanović,Paris 2024,2024-07-27,2024-08-10,Serbia
+8,Marko,Ivović,Paris 2024,2024-07-27,2024-08-10,Serbia
+9,Nikola,Jovović,Paris 2024,2024-07-27,2024-08-10,Serbia
+10,Miran,Kujundžić,Paris 2024,2024-07-27,2024-08-10,Serbia
+12,Pavle,Perić,Paris 2024,2024-07-27,2024-08-10,Serbia
+14,Aleksandar,Atanasijević,Paris 2024,2024-07-27,2024-08-10,Serbia
+16,Dražen,Luburić,Paris 2024,2024-07-27,2024-08-10,Serbia
+18,Marko,Podraščanin,Paris 2024,2024-07-27,2024-08-10,Serbia
+21,Vuk,Todorović,Paris 2024,2024-07-27,2024-08-10,Serbia
+29,Aleksandar,Nedeljković,Paris 2024,2024-07-27,2024-08-10,Serbia
+15,Nemanja,Mašulović,Paris 2024,2024-07-27,2024-08-10,Serbia
+1,Tonček,Štern,Paris 2024,2024-07-27,2024-08-10,Slovenia
+2,Alen,Pajenk,Paris 2024,2024-07-27,2024-08-10,Slovenia
+4,Jan,Kozamernik,Paris 2024,2024-07-27,2024-08-10,Slovenia
+9,Dejan,Vinčić,Paris 2024,2024-07-27,2024-08-10,Slovenia
+10,Sašo,Štalekar,Paris 2024,2024-07-27,2024-08-10,Slovenia
+13,Jani,Kovačič,Paris 2024,2024-07-27,2024-08-10,Slovenia
+14,Žiga,Štern,Paris 2024,2024-07-27,2024-08-10,Slovenia
+16,Gregor,Ropret,Paris 2024,2024-07-27,2024-08-10,Slovenia
+17,Tine,Urnaut,Paris 2024,2024-07-27,2024-08-10,Slovenia
+18,Klemen,Čebulj,Paris 2024,2024-07-27,2024-08-10,Slovenia
+19,Rok,Možič,Paris 2024,2024-07-27,2024-08-10,Slovenia
+20,Nik,Mujanović,Paris 2024,2024-07-27,2024-08-10,Slovenia
+3,Uroš,Planinšič,Paris 2024,2024-07-27,2024-08-10,Slovenia
+1,Bruno,Rezende,Paris 2024,2024-07-27,2024-08-10,Brazil
+2,Lukas,Bergmann,Paris 2024,2024-07-27,2024-08-10,Brazil
+6,Adriano,Xavier,Paris 2024,2024-07-27,2024-08-10,Brazil
+9,Yoandy,Leal,Paris 2024,2024-07-27,2024-08-10,Brazil
+12,Isac,Santos,Paris 2024,2024-07-27,2024-08-10,Brazil
+14,Fernando,Kreling,Paris 2024,2024-07-27,2024-08-10,Brazil
+16,Lucas,Saatkamp,Paris 2024,2024-07-27,2024-08-10,Brazil
+17,Thales,Hoss,Paris 2024,2024-07-27,2024-08-10,Brazil
+18,Ricardo,Lucarelli,Paris 2024,2024-07-27,2024-08-10,Brazil
+21,Alan,Souza,Paris 2024,2024-07-27,2024-08-10,Brazil
+23,Flávio,Gualberto,Paris 2024,2024-07-27,2024-08-10,Brazil
+28,Darlan,Souza,Paris 2024,2024-07-27,2024-08-10,Brazil
+8,Henrique,Honorato,Paris 2024,2024-07-27,2024-08-10,Brazil
+2,Ahmed,Azab,Paris 2024,2024-07-27,2024-08-10,Egypt
+5,Mohamed,Elhaddad,Paris 2024,2024-07-27,2024-08-10,Egypt
+6,Mohamed,Hassan,Paris 2024,2024-07-27,2024-08-10,Egypt
+8,Abdelrahman,Elhossiny,Paris 2024,2024-07-27,2024-08-10,Egypt
+9,Mohamed,Sayedin,Paris 2024,2024-07-27,2024-08-10,Egypt
+10,Mohamed,Masoud,Paris 2024,2024-07-27,2024-08-10,Egypt
+12,Hossam,Abdalla,Paris 2024,2024-07-27,2024-08-10,Egypt
+14,Seifeldin,Aly,Paris 2024,2024-07-27,2024-08-10,Egypt
+15,Abdelrahman,Seoudy,Paris 2024,2024-07-27,2024-08-10,Egypt
+16,Mostafa,Gaber,Paris 2024,2024-07-27,2024-08-10,Egypt
+17,Reda,Haikal,Paris 2024,2024-07-27,2024-08-10,Egypt
+22,Mohamed,Issa,Paris 2024,2024-07-27,2024-08-10,Egypt
+23,Ahmed,Omar,Paris 2024,2024-07-27,2024-08-10,Egypt
+5,Alessandro,Michieletto,Paris 2024,2024-07-27,2024-08-10,Italy
+6,Simone,Giannelli,Paris 2024,2024-07-27,2024-08-10,Italy
+7,Fabio,Balaso,Paris 2024,2024-07-27,2024-08-10,Italy
+8,Riccardo,Sbertoli,Paris 2024,2024-07-27,2024-08-10,Italy
+11,Giovanni,Sanguinetti,Paris 2024,2024-07-27,2024-08-10,Italy
+12,Mattia,Bottolo,Paris 2024,2024-07-27,2024-08-10,Italy
+14,Gianluca,Galassi,Paris 2024,2024-07-27,2024-08-10,Italy
+15,Daniele,Lavia,Paris 2024,2024-07-27,2024-08-10,Italy
+16,Yuri,Romanò,Paris 2024,2024-07-27,2024-08-10,Italy
+19,Roberto,Russo,Paris 2024,2024-07-27,2024-08-10,Italy
+23,Alessandro,Bovolenta,Paris 2024,2024-07-27,2024-08-10,Italy
+31,Luca,Porro,Paris 2024,2024-07-27,2024-08-10,Italy
+28,Gabriele,Laurenzano,Paris 2024,2024-07-27,2024-08-10,Italy
+5,Łukasz,Kaczmarek,Paris 2024,2024-07-27,2024-08-10,Poland
+6,Bartosz,Kurek,Paris 2024,2024-07-27,2024-08-10,Poland
+9,Wilfredo,León,Paris 2024,2024-07-27,2024-08-10,Poland
+11,Aleksander,Śliwka,Paris 2024,2024-07-27,2024-08-10,Poland
+12,Grzegorz,Łomacz,Paris 2024,2024-07-27,2024-08-10,Poland
+15,Jakub,Kochanowski,Paris 2024,2024-07-27,2024-08-10,Poland
+16,Kamil,Semeniuk,Paris 2024,2024-07-27,2024-08-10,Poland
+17,Paweł,Zatorski,Paris 2024,2024-07-27,2024-08-10,Poland
+19,Marcin,Janusz,Paris 2024,2024-07-27,2024-08-10,Poland
+20,Mateusz,Bieniek,Paris 2024,2024-07-27,2024-08-10,Poland
+21,Tomasz,Fornal,Paris 2024,2024-07-27,2024-08-10,Poland
+30,Bartłomiej,Bołądź,Paris 2024,2024-07-27,2024-08-10,Poland
+99,Norbert,Huber,Paris 2024,2024-07-27,2024-08-10,Poland
+1,Matías,Sánchez,Paris 2024,2024-07-27,2024-08-10,Argentina
+3,Jan,Franchi,Paris 2024,2024-07-27,2024-08-10,Argentina
+7,Facundo,Conte,Paris 2024,2024-07-27,2024-08-10,Argentina
+8,Agustín,Loser,Paris 2024,2024-07-27,2024-08-10,Argentina
+9,Santiago,Danani,Paris 2024,2024-07-27,2024-08-10,Argentina
+12,Bruno,Lima,Paris 2024,2024-07-27,2024-08-10,Argentina
+15,Luciano,De Cecco,Paris 2024,2024-07-27,2024-08-10,Argentina
+16,Pablo,Kukartsev,Paris 2024,2024-07-27,2024-08-10,Argentina
+17,Luciano,Vicentín,Paris 2024,2024-07-27,2024-08-10,Argentina
+18,Martín,Ramos,Paris 2024,2024-07-27,2024-08-10,Argentina
+21,Luciano,Palonsky,Paris 2024,2024-07-27,2024-08-10,Argentina
+22,Nicolás,Zerba,Paris 2024,2024-07-27,2024-08-10,Argentina
+13,Ezequiel,Palacios,Paris 2024,2024-07-27,2024-08-10,Argentina
+1,Christian,Fromm,Paris 2024,2024-07-27,2024-08-10,Germany
+5,Moritz,Reichert,Paris 2024,2024-07-27,2024-08-10,Germany
+6,Johannes,Tille,Paris 2024,2024-07-27,2024-08-10,Germany
+9,György,Grozer,Paris 2024,2024-07-27,2024-08-10,Germany
+10,Julian,Zenger,Paris 2024,2024-07-27,2024-08-10,Germany
+11,Lukas,Kampa,Paris 2024,2024-07-27,2024-08-10,Germany
+12,Anton,Brehme,Paris 2024,2024-07-27,2024-08-10,Germany
+13,Ruben,Schott,Paris 2024,2024-07-27,2024-08-10,Germany
+14,Moritz,Karlitzek,Paris 2024,2024-07-27,2024-08-10,Germany
+21,Tobias,Krick,Paris 2024,2024-07-27,2024-08-10,Germany
+22,Tobias,Brand,Paris 2024,2024-07-27,2024-08-10,Germany
+25,Lukas,Maase,Paris 2024,2024-07-27,2024-08-10,Germany
+17,Jan,Zimmermann,Paris 2024,2024-07-27,2024-08-10,Germany
+1,Yuji,Nishida,Paris 2024,2024-07-27,2024-08-10,Japan
+2,Taishi,Onodera,Paris 2024,2024-07-27,2024-08-10,Japan
+3,Akihiro,Fukatsu,Paris 2024,2024-07-27,2024-08-10,Japan
+4,Kento,Miyaura,Paris 2024,2024-07-27,2024-08-10,Japan
+5,Tatsunori,Otsuka,Paris 2024,2024-07-27,2024-08-10,Japan
+6,Akihiro,Yamauchi,Paris 2024,2024-07-27,2024-08-10,Japan
+8,Masahiro,Sekita,Paris 2024,2024-07-27,2024-08-10,Japan
+10,Kentaro,Takahashi,Paris 2024,2024-07-27,2024-08-10,Japan
+12,Ran,Takahashi,Paris 2024,2024-07-27,2024-08-10,Japan
+14,Yūki,Ishikawa,Paris 2024,2024-07-27,2024-08-10,Japan
+15,Masato,Kai,Paris 2024,2024-07-27,2024-08-10,Japan
+20,Tomohiro,Yamamoto,Paris 2024,2024-07-27,2024-08-10,Japan
+11,Shoma,Tomita,Paris 2024,2024-07-27,2024-08-10,Japan
+1,Matthew,Anderson,Paris 2024,2024-07-27,2024-08-10,United States
+2,Aaron,Russell,Paris 2024,2024-07-27,2024-08-10,United States
+4,Jeffrey,Jendryk,Paris 2024,2024-07-27,2024-08-10,United States
+8,Torey,DeFalco,Paris 2024,2024-07-27,2024-08-10,United States
+11,Micah,Christenson,Paris 2024,2024-07-27,2024-08-10,United States
+12,Maxwell,Holt,Paris 2024,2024-07-27,2024-08-10,United States
+14,Micah,Maʻa,Paris 2024,2024-07-27,2024-08-10,United States
+17,Thomas,Jaeschke,Paris 2024,2024-07-27,2024-08-10,United States
+18,Garrett,Muagututia,Paris 2024,2024-07-27,2024-08-10,United States
+19,Taylor,Averill,Paris 2024,2024-07-27,2024-08-10,United States
+20,David,Smith,Paris 2024,2024-07-27,2024-08-10,United States
+22,Erik,Shoji,Paris 2024,2024-07-27,2024-08-10,United States
+5,Kyle,Ensing,Paris 2024,2024-07-27,2024-08-10,United States

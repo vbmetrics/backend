@@ -56,5 +56,20 @@ class CRUDPlayerTeamHistory(
         statement = statement.offset(skip).limit(limit)
         return db.exec(statement).all()
 
+    def get_by_foreign_keys(
+        self,
+        db: Session,
+        *,
+        player_id: UUID,
+        team_id: UUID,
+        season_id: UUID,
+    ) -> PlayerTeamHistory | None:
+        statement = select(self.model).where(
+            self.model.player_id == player_id,
+            self.model.team_id == team_id,
+            self.model.season_id == season_id,
+        )
+        return db.exec(statement).first()
+
 
 player_team_history = CRUDPlayerTeamHistory(PlayerTeamHistory)
