@@ -341,8 +341,10 @@ def main() -> None:
     logging.info("Starting the seeding process")
     db = SessionLocal()
 
-    seed_arenas(db)
+    # start with countries
     seed_countries(db)
+    # then other entities that depend on countries
+    seed_arenas(db)
     seed_players(db)
     seed_seasons(db)
     seed_staff_members(db)
