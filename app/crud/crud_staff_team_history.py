@@ -56,5 +56,15 @@ class CRUDStaffTeamHistory(
         statement = statement.offset(skip).limit(limit)
         return db.exec(statement).all()
 
+    def get_by_foreign_keys(
+        self, db: Session, *, staff_member_id: UUID, team_id: UUID, season_id: UUID
+    ) -> StaffTeamHistory | None:
+        statement = select(self.model).where(
+            self.model.staff_member_id == staff_member_id,
+            self.model.team_id == team_id,
+            self.model.season_id == season_id,
+        )
+        return db.exec(statement).first()
+
 
 staff_team_history = CRUDStaffTeamHistory(StaffTeamHistory)

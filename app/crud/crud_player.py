@@ -19,5 +19,14 @@ class CRUDPlayer(CRUDBase[Player, PlayerCreate, PlayerUpdate]):
         )
         return db.exec(statement).first()
 
+    def get_by_name(
+        self, db: Session, first_name: str, last_name: str
+    ) -> Player | None:
+        statement = select(self.model).where(
+            self.model.first_name == first_name,
+            self.model.last_name == last_name,
+        )
+        return db.exec(statement).first()
+
 
 player = CRUDPlayer(Player)

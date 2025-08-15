@@ -1,1 +1,13 @@
-role,staff_member_id,team_id,season_id
+role,first_name,last_name,team_name,season_name
+head_coach,Tuomas,Sammelvuo,Canada,Paris 2024
+head_coach,Andrea,Giani,France,Paris 2024
+head_coach,Igor,Kolaković,Serbia,Paris 2024
+head_coach,Gheorghe,Cretu,Slovenia,Paris 2024
+head_coach,Bernardo,Rezende,Brazil,Paris 2024
+head_coach,Fernando,Muñoz,Egypt,Paris 2024
+head_coach,Ferdinando,De Giorgi,Italy,Paris 2024
+head_coach,Nikola,Grbić,Poland,Paris 2024
+head_coach,Marcelo,Méndez,Argentina,Paris 2024
+head_coach,Michał,Winiarski,Germany,Paris 2024
+head_coach,Philippe,Blain,Japan,Paris 2024
+head_coach,John,Speraw,United States,Paris 2024
