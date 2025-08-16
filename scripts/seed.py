@@ -112,6 +112,10 @@ def seed_player_team_history(db: Session) -> None:
                 )
                 continue
 
+            assert player_id is not None
+            assert team_id is not None
+            assert season_id is not None
+
             existing_history = crud_player_team_history.get_by_foreign_keys(
                 db, player_id=player_id, team_id=team_id, season_id=season_id
             )
@@ -282,6 +286,10 @@ def seed_staff_team_history(db: Session) -> None:
                     f"{first_name} {last_name}, {team_name}, {season_name}. Skipping..."
                 )
                 continue
+
+            assert staff_id is not None
+            assert team_id is not None
+            assert season_id is not None
 
             existing_history = crud_staff_team_history.get_by_foreign_keys(
                 db=db,
