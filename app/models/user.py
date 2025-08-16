@@ -1,15 +1,26 @@
 import uuid
+from enum import Enum
 from typing import Optional
 from uuid import UUID
 
 from pydantic import field_validator
+from sqlalchemy import Column
+from sqlalchemy import Enum as SA_Enum
 from sqlmodel import Field, SQLModel
+
+
+class UserRole(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
 
 
 class UserBase(SQLModel):
     email: str = Field(unique=True, index=True)
     is_active: bool = True
     is_superuser: bool = False
+    role: UserRole = Field(
+        sa_column=Column(SA_Enum(UserRole, native_enum=False), default=UserRole.USER)
+    )
 
 
 class User(UserBase, table=True):

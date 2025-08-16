@@ -58,4 +58,15 @@ def get_current_active_user(
     return current_user
 
 
+def require_role(required_role: models.user.UserRole):
+    def check_user_role(current_user: CurrentUser) -> None:
+        if current_user.role != required_role:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="The user does not have right privileges",
+            )
+
+    return check_user_role
+
+
 CurrentUser = Annotated[models.User, Depends(get_current_active_user)]
