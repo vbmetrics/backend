@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from . import (
     arena,
+    auth,
     country,
     player,
     player_team_history,
@@ -21,3 +22,4 @@ api_router.include_router(season.router)
 api_router.include_router(staff_member.router)
 api_router.include_router(staff_team_history.router)
 api_router.include_router(team.router)
+api_router.include_router(auth.router)

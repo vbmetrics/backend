@@ -6,6 +6,7 @@ from .crud_season import season
 from .crud_staff_member import staff_member
 from .crud_staff_team_history import staff_team_history
 from .crud_team import team
+from .crud_user import user
 
 __all__ = [
     "arena",
@@ -16,4 +17,5 @@ __all__ = [
     "staff_member",
     "staff_team_history",
     "team",
+    "user",
 ]
