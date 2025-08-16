@@ -57,7 +57,7 @@ from .team import (
     TeamUpdate,
 )
 from .token import Token, TokenData
-from .users import (
+from .user import (
     User,
     UserBase,
     UserCreate,
