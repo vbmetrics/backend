@@ -1,10 +1,11 @@
 import uuid
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 from uuid import UUID
 
 from pydantic import field_validator
-from sqlalchemy import Column
+from sqlalchemy import Column, DateTime, func
 from sqlalchemy import Enum as SA_Enum
 from sqlmodel import Field, SQLModel
 
@@ -20,6 +21,21 @@ class UserBase(SQLModel):
     is_superuser: bool = False
     role: UserRole = Field(
         sa_column=Column(SA_Enum(UserRole, native_enum=False), default=UserRole.USER)
+    )
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=func.now()
+        ),
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=func.now(),
+            onupdate=func.now(),
+        ),
     )
 
 

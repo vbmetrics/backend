@@ -1,11 +1,12 @@
 import enum
 import uuid
-from datetime import date
+from datetime import date, datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
+from sqlalchemy import Column, DateTime, func
 from sqlalchemy import Enum as SQLAlchemyEnum
-from sqlmodel import Column, Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .player_team_history import PlayerTeamHistory
@@ -24,6 +25,21 @@ class SeasonBase(SQLModel):
     )
     start_date: date
     end_date: date
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=func.now()
+        ),
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=func.now(),
+            onupdate=func.now(),
+        ),
+    )
 
 
 class Season(SeasonBase, table=True):
