@@ -1,5 +1,6 @@
 from .crud_arena import arena
 from .crud_country import country
+from .crud_match import match
 from .crud_player import player
 from .crud_player_team_history import player_team_history
 from .crud_season import season
@@ -11,6 +12,7 @@ from .crud_user import user
 __all__ = [
     "arena",
     "country",
+    "match",
     "player_team_history",
     "player",
     "season",

@@ -8,6 +8,7 @@ from sqlmodel import CheckConstraint, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .country import Country, CountryRead
+    from .match import Match
     from .team import Team
 
 
@@ -41,6 +42,7 @@ class Arena(ArenaBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
+    matches: list["Match"] = Relationship(back_populates="arena")
     country: "Country" = Relationship(back_populates="arenas")
     home_team: list["Team"] = Relationship(back_populates="home_arena")
 

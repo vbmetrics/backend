@@ -7,6 +7,14 @@ from .arena import (
     ArenaUpdate,
 )
 from .country import Country, CountryBase, CountryCreate, CountryRead, CountryUpdate
+from .match import (
+    Match,
+    MatchBase,
+    MatchCreate,
+    MatchRead,
+    MatchReadWithDetails,
+    MatchUpdate,
+)
 from .player import (
     Player,
     PlayerBase,
@@ -79,6 +87,13 @@ __all__ = [
     "CountryCreate",
     "CountryRead",
     "CountryUpdate",
+    # Match
+    "Match",
+    "MatchBase",
+    "MatchCreate",
+    "MatchRead",
+    "MatchReadWithDetails",
+    "MatchUpdate",
     # Player
     "Player",
     "PlayerBase",

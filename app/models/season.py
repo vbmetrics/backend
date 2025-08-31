@@ -9,6 +9,7 @@ from sqlalchemy import Enum as SQLAlchemyEnum
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from .match import Match
     from .player_team_history import PlayerTeamHistory
     from .staff_team_history import StaffTeamHistory
 
@@ -47,6 +48,7 @@ class Season(SeasonBase, table=True):
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
     # Relationships
+    matches: list["Match"] = Relationship(back_populates="season")
     staff_team_histories: list["StaffTeamHistory"] = Relationship(
         back_populates="season"
     )

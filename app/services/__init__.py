@@ -1,5 +1,6 @@
 from .arena_service import arena_service
 from .country_service import country_service
+from .match_service import match_service
 from .player_service import player_service
 from .player_team_history_service import player_team_history_service
 from .season_service import season_service
@@ -11,6 +12,7 @@ from .user_service import user_service
 __all__ = [
     "arena_service",
     "country_service",
+    "match_service",
     "player_service",
     "player_team_history_service",
     "season_service",
