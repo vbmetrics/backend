@@ -1,7 +1,9 @@
 import uuid
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
+from sqlalchemy import Column, DateTime, func
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -15,6 +17,21 @@ class StaffTeamHistoryBase(SQLModel):
     staff_member_id: UUID = Field(foreign_key="staff_member.id")
     team_id: UUID = Field(foreign_key="team.id")
     season_id: UUID = Field(foreign_key="season.id")
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=func.now()
+        ),
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=func.now(),
+            onupdate=func.now(),
+        ),
+    )
 
 
 class StaffTeamHistory(StaffTeamHistoryBase, table=True):

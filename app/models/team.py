@@ -1,14 +1,17 @@
 import enum
 import uuid
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
+from sqlalchemy import Column, DateTime, func
 from sqlalchemy import Enum as SQLAlchemyEnum
-from sqlmodel import Column, Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .arena import Arena
     from .country import Country
+    from .match import Match
     from .player_team_history import PlayerTeamHistory
     from .staff_team_history import StaffTeamHistory
 
@@ -26,6 +29,21 @@ class TeamBase(SQLModel):
     email: Optional[str] = None
     country_code: str = Field(foreign_key="country.alpha_2_code")
     home_arena_id: Optional[UUID] = Field(default=None, foreign_key="arena.id")
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=func.now()
+        ),
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=func.now(),
+            onupdate=func.now(),
+        ),
+    )
 
 
 class Team(TeamBase, table=True):
@@ -38,6 +56,14 @@ class Team(TeamBase, table=True):
     home_arena: Optional["Arena"] = Relationship(back_populates="home_team")
     staff_histories: list["StaffTeamHistory"] = Relationship(back_populates="team")
     player_histories: list["PlayerTeamHistory"] = Relationship(back_populates="team")
+    home_matches: list["Match"] = Relationship(
+        back_populates="home_team",
+        sa_relationship_kwargs={"foreign_keys": "[Match.home_team_id]"},
+    )
+    away_matches: list["Match"] = Relationship(
+        back_populates="away_team",
+        sa_relationship_kwargs={"foreign_keys": "[Match.away_team_id]"},
+    )
 
 
 class TeamCreate(TeamBase):

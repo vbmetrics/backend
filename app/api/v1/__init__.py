@@ -4,6 +4,7 @@ from . import (
     arena,
     auth,
     country,
+    match,
     player,
     player_team_history,
     season,
@@ -23,3 +24,4 @@ api_router.include_router(staff_member.router)
 api_router.include_router(staff_team_history.router)
 api_router.include_router(team.router)
 api_router.include_router(auth.router)
+api_router.include_router(match.router)

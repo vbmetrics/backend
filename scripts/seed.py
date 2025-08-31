@@ -345,6 +345,11 @@ def seed_teams(db: Session) -> None:
                 logging.info(f"Team {team_name} already exists, skipping.")
 
 
+def seed_matches(db: Session) -> None:
+    # TODO: prepare match data and load it to database
+    pass
+
+
 def main() -> None:
     logging.info("Starting the seeding process")
     db = SessionLocal()
@@ -357,6 +362,7 @@ def main() -> None:
     seed_seasons(db)
     seed_staff_members(db)
     seed_teams(db)
+    seed_matches(db)
     # history tables need to be seeded after teams, players, staff members and seasons
     seed_player_team_history(db)
     seed_staff_team_history(db)

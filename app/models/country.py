@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import CHAR
-from sqlmodel import Column, Field, Relationship, SQLModel
+from sqlalchemy import CHAR, Column, DateTime, func
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .arena import Arena
@@ -15,6 +16,21 @@ class CountryBase(SQLModel):
     alpha_2_code: str = Field(sa_column=Column(CHAR(2), primary_key=True))
     latitude: float
     longitude: float
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True), nullable=False, server_default=func.now()
+        ),
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            nullable=False,
+            server_default=func.now(),
+            onupdate=func.now(),
+        ),
+    )
 
 
 class Country(CountryBase, table=True):
