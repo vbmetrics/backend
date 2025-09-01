@@ -9,6 +9,7 @@ from sqlmodel import Field, Relationship, SQLModel
 if TYPE_CHECKING:
     from .arena import Arena, ArenaRead
     from .season import Season, SeasonRead
+    from .set import Set
     from .team import Team, TeamRead
 
 
@@ -50,6 +51,7 @@ class Match(MatchBase, table=True):
     # Relationships
     season: Optional["Season"] = Relationship(back_populates="matches")
     arena: Optional["Arena"] = Relationship(back_populates="matches")
+    sets: list["Set"] = Relationship(back_populates="match")
     home_team: "Team" = Relationship(
         back_populates="home_matches",
         sa_relationship_kwargs={"foreign_keys": "[Match.home_team_id]"},
