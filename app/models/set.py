@@ -8,6 +8,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .match import Match, MatchRead
+    from .rally import Rally
     from .team import Team, TeamRead
 
 
@@ -46,6 +47,7 @@ class Set(SetBase, table=True):
 
     # Relationships
     match: "Match" = Relationship(back_populates="sets")
+    rallies: list["Rally"] = Relationship(back_populates="set")
     winner_team: Optional["Team"] = Relationship(back_populates="won_sets")
 
 

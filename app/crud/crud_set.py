@@ -65,5 +65,13 @@ class CRUDSet(CRUDBase[Set, SetCreate, SetUpdate]):
         )
         return db.exec(statement).first()
 
+    def get_with_match(self, db: Session, id: UUID) -> Set | None:
+        statement = (
+            select(self.model)
+            .where(self.model.id == id)
+            .options(selectinload(self.model.match))  # type: ignore[arg-type]
+        )
+        return db.exec(statement).first()
+
 
 set = CRUDSet(Set)

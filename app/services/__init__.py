@@ -3,6 +3,7 @@ from .country_service import country_service
 from .match_service import match_service
 from .player_service import player_service
 from .player_team_history_service import player_team_history_service
+from .rally_service import rally_service
 from .season_service import season_service
 from .set_service import set_service
 from .staff_member_service import staff_member_service
@@ -16,6 +17,7 @@ __all__ = [
     "match_service",
     "player_service",
     "player_team_history_service",
+    "rally_service",
     "season_service",
     "set_service",
     "staff_member_service",
