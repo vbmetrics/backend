@@ -32,6 +32,14 @@ from .player_team_history import (
     PlayerTeamHistoryReadWithDetails,
     PlayerTeamHistoryUpdate,
 )
+from .rally import (
+    Rally,
+    RallyBase,
+    RallyCreate,
+    RallyRead,
+    RallyReadWithDetails,
+    RallyUpdate,
+)
 from .season import (
     Season,
     SeasonBase,
@@ -110,6 +118,13 @@ __all__ = [
     "PlayerUpdate",
     "PlayerPosition",
     "PlayerHand",
+    # Rally
+    "Rally",
+    "RallyBase",
+    "RallyCreate",
+    "RallyRead",
+    "RallyReadWithDetails",
+    "RallyUpdate",
     # Season
     "Season",
     "SeasonBase",
@@ -165,5 +180,6 @@ __all__ = [
 
 ArenaReadWithCountry.model_rebuild()
 MatchReadWithDetails.model_rebuild()
+RallyReadWithDetails.model_rebuild()
 SetReadWithDetails.model_rebuild()
 StaffTeamHistoryReadWithDetails.model_rebuild()

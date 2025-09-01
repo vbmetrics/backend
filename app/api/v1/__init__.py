@@ -7,6 +7,7 @@ from . import (
     match,
     player,
     player_team_history,
+    rally,
     season,
     set,
     staff_member,
@@ -20,6 +21,7 @@ api_router.include_router(arena.router)
 api_router.include_router(country.router)
 api_router.include_router(player.router)
 api_router.include_router(player_team_history.router)
+api_router.include_router(rally.router)
 api_router.include_router(season.router)
 api_router.include_router(set.router)
 api_router.include_router(staff_member.router)

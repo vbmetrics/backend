@@ -19,7 +19,7 @@ def create_match_endpoint(
     return match_service.create(db=db, match_in=match_in)
 
 
-@router.get("/", response_model=list[models.PlayerRead])
+@router.get("/", response_model=list[models.MatchRead])
 def read_matches_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -39,7 +39,7 @@ def read_matches_endpoint(
     )
 
 
-@router.get("/{match_id}", response_model=models.PlayerRead)
+@router.get("/{match_id}", response_model=models.MatchRead)
 def read_match_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -48,7 +48,7 @@ def read_match_endpoint(
     return match_service.get_by_id(db=db, match_id=match_id)
 
 
-@router.patch("/{match_id}", response_model=models.PlayerRead)
+@router.patch("/{match_id}", response_model=models.MatchRead)
 def update_match_endpoint(
     *,
     db: Session = Depends(deps.get_db),

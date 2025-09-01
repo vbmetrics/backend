@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from .country import Country
     from .match import Match
     from .player_team_history import PlayerTeamHistory
+    from .rally import Rally
     from .set import Set
     from .staff_team_history import StaffTeamHistory
 
@@ -65,6 +66,14 @@ class Team(TeamBase, table=True):
     away_matches: list["Match"] = Relationship(
         back_populates="away_team",
         sa_relationship_kwargs={"foreign_keys": "[Match.away_team_id]"},
+    )
+    serve_rallies: list["Rally"] = Relationship(
+        back_populates="serve_team",
+        sa_relationship_kwargs={"foreign_keys": "[Rally.serve_team_id]"},
+    )
+    won_rallies: list["Rally"] = Relationship(
+        back_populates="score_team",
+        sa_relationship_kwargs={"foreign_keys": "[Rally.score_team_id]"},
     )
 
 

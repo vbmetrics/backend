@@ -3,6 +3,7 @@ from .crud_country import country
 from .crud_match import match
 from .crud_player import player
 from .crud_player_team_history import player_team_history
+from .crud_rally import rally
 from .crud_season import season
 from .crud_set import set
 from .crud_staff_member import staff_member
@@ -16,6 +17,7 @@ __all__ = [
     "match",
     "player_team_history",
     "player",
+    "rally",
     "season",
     "set",
     "staff_member",
