@@ -46,7 +46,7 @@ class MatchService:
                 detail="Home team and away team cannot be the same.",
             )
 
-        # TODO: more rules, e.g. teams in the same season (?)
+        # TODO: more rules, e.g. the same season (?)
 
         return self.match_crud.create(db=db, obj_in=match_in)
 

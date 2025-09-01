@@ -40,6 +40,14 @@ from .season import (
     SeasonType,
     SeasonUpdate,
 )
+from .set import (
+    Set,
+    SetBase,
+    SetCreate,
+    SetRead,
+    SetReadWithDetails,
+    SetUpdate,
+)
 from .staff_member import (
     StaffMember,
     StaffMemberBase,
@@ -109,6 +117,13 @@ __all__ = [
     "SeasonRead",
     "SeasonUpdate",
     "SeasonType",
+    # Set
+    "Set",
+    "SetBase",
+    "SetCreate",
+    "SetRead",
+    "SetReadWithDetails",
+    "SetUpdate",
     # StaffMember
     "StaffMember",
     "StaffMemberBase",
@@ -149,4 +164,6 @@ __all__ = [
 ]
 
 ArenaReadWithCountry.model_rebuild()
+MatchReadWithDetails.model_rebuild()
+SetReadWithDetails.model_rebuild()
 StaffTeamHistoryReadWithDetails.model_rebuild()

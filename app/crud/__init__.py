@@ -4,6 +4,7 @@ from .crud_match import match
 from .crud_player import player
 from .crud_player_team_history import player_team_history
 from .crud_season import season
+from .crud_set import set
 from .crud_staff_member import staff_member
 from .crud_staff_team_history import staff_team_history
 from .crud_team import team
@@ -16,6 +17,7 @@ __all__ = [
     "player_team_history",
     "player",
     "season",
+    "set",
     "staff_member",
     "staff_team_history",
     "team",

@@ -8,6 +8,7 @@ from . import (
     player,
     player_team_history,
     season,
+    set,
     staff_member,
     staff_team_history,
     team,
@@ -20,6 +21,7 @@ api_router.include_router(country.router)
 api_router.include_router(player.router)
 api_router.include_router(player_team_history.router)
 api_router.include_router(season.router)
+api_router.include_router(set.router)
 api_router.include_router(staff_member.router)
 api_router.include_router(staff_team_history.router)
 api_router.include_router(team.router)
