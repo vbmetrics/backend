@@ -38,6 +38,7 @@ class CRUDRally(CRUDBase[Rally, RallyCreate, RallyUpdate]):
         Overwrites get_multi method to add dynamic filters.
         """
         statement = select(self.model).order_by(
+            # TODO: sort to fix
             self.model.rally_number_in_set.desc()  # type: ignore
         )
 

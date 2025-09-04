@@ -1,3 +1,4 @@
+from .crud_action import action
 from .crud_arena import arena
 from .crud_country import country
 from .crud_match import match
@@ -12,6 +13,7 @@ from .crud_team import team
 from .crud_user import user
 
 __all__ = [
+    "action",
     "arena",
     "country",
     "match",

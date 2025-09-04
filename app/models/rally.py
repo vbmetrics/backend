@@ -7,6 +7,7 @@ from sqlalchemy import CheckConstraint, Column, DateTime, String, UniqueConstrai
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from .action import Action
     from .set import Set, SetRead
     from .team import Team, TeamRead
 
@@ -57,6 +58,7 @@ class Rally(RallyBase, table=True):
         back_populates="won_rallies",
         sa_relationship_kwargs={"foreign_keys": "[Rally.score_team_id]"},
     )
+    actions: list["Action"] = Relationship(back_populates="rally")
 
 
 class RallyCreate(RallyBase):
