@@ -9,6 +9,7 @@ from sqlalchemy import Enum as SQLAlchemyEnum
 from sqlmodel import CheckConstraint, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from .action import Action
     from .country import Country
     from .player_team_history import PlayerTeamHistory
 
@@ -75,6 +76,7 @@ class Player(PlayerBase, table=True):
     # Relationships
     nationality: "Country" = Relationship(back_populates="players")
     team_histories: list["PlayerTeamHistory"] = Relationship(back_populates="player")
+    actions: list["Action"] = Relationship(back_populates="player")
 
 
 class PlayerCreate(PlayerBase):

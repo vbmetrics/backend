@@ -1,3 +1,11 @@
+from .action import (
+    Action,
+    ActionBase,
+    ActionCreate,
+    ActionRead,
+    ActionReadWithDetails,
+    ActionUpdate,
+)
 from .arena import (
     Arena,
     ArenaBase,
@@ -90,6 +98,13 @@ from .user import (
 )
 
 __all__ = [
+    # Action
+    "Action",
+    "ActionBase",
+    "ActionCreate",
+    "ActionRead",
+    "ActionReadWithDetails",
+    "ActionUpdate",
     # Arena
     "Arena",
     "ArenaBase",
@@ -178,6 +193,7 @@ __all__ = [
     "User",
 ]
 
+ActionReadWithDetails.model_rebuild()
 ArenaReadWithCountry.model_rebuild()
 MatchReadWithDetails.model_rebuild()
 RallyReadWithDetails.model_rebuild()
