@@ -6,11 +6,13 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlmodel import Session
 
-from app import crud, models
+from app import models
 from app.core.config import settings
+from app.crud.crud_action import action as action_crud
 from app.db.session import SessionLocal
 from app.services.action_service import ActionService
 from app.services.user_service import user_service
+from app.utils.code_parser import CodeParser
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
@@ -70,9 +72,13 @@ def require_role(required_role: models.user.UserRole):
     return check_user_role
 
 
-def get_action_service() -> ActionService:
+def get_code_parser() -> CodeParser:
+    return CodeParser()
+
+
+def get_action_service(parser: CodeParser = Depends(get_code_parser)) -> ActionService:
     # TODO: add other getters
-    return ActionService(crud.action)
+    return ActionService(action_crud=action_crud, code_parser=parser)
 
 
 CurrentUser = Annotated[models.User, Depends(get_current_active_user)]

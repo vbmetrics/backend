@@ -6,11 +6,13 @@ from sqlmodel import Session
 from app import models
 from app.crud.crud_action import CRUDAction
 from app.services.errors import BadRequestError, ConflictError, NotFoundError
+from app.utils.code_parser import CodeParser
 
 
 class ActionService:
-    def __init__(self, action_crud: CRUDAction):
+    def __init__(self, action_crud: CRUDAction, code_parser: CodeParser):
         self.action_crud = action_crud
+        self._parser = code_parser
 
     def get_by_id(self, db: Session, action_id: UUID) -> models.Action:
         db_action = self.action_crud.get(db=db, id=action_id)
@@ -44,12 +46,13 @@ class ActionService:
         Prepares a new action with data validation and parsing.
         """
         # TODO: other rules
+        parsed = self._parser.parse_action(action_in.raw_action_code)
 
-        if action_in.start_zone is not None and not (1 <= action_in.start_zone <= 9):
+        if action_in.sequence_in_rally is None or action_in.sequence_in_rally <= 0:
             raise BadRequestError(
-                "start_zone must be between 1 and 9",
-                code="INVALID_START_ZONE",
-                details={"start_zone": action_in.start_zone},
+                "sequence_in_rally must be a positive integer",
+                code="MISSING_SEQUENCE",
+                details={},
             )
 
         existing = self.action_crud.get_by_rally_id_and_sequence(
@@ -66,25 +69,65 @@ class ActionService:
                 },
             )
 
-        return self.action_crud.create(db=db, obj_in=action_in)
+        if action_in.start_zone is not None and not (1 <= action_in.start_zone <= 9):
+            raise BadRequestError(
+                "start_zone must be between 1 and 9",
+                code="INVALID_START_ZONE",
+                details={"start_zone": action_in.start_zone},
+            )
+
+        payload = action_in.model_copy(
+            update={
+                "team_context": parsed.team_context,
+                "skill_code": parsed.skill_code,
+                "evaluation_code": parsed.evaluation_code,
+                "player_jersey_number": parsed.player_jersey_number,
+                "start_zone": parsed.start_zone,
+                "start_subzone": parsed.start_subzone,
+                "end_zone": parsed.end_zone,
+                "end_subzone": parsed.end_subzone,
+                "modifiers": "".join(parsed.modifiers) if parsed.modifiers else None,
+            }
+        )
+
+        return self.action_crud.create(db=db, obj_in=payload)
 
     def update(
         self, db: Session, action_id: UUID, action_in: models.ActionUpdate
     ) -> models.Action:
         db_action = self.get_by_id(db=db, action_id=action_id)
 
-        # To update raw code data parse once again and validate (!)
         if action_in.raw_action_code:
-            # TODO
-            # If parsing fails -> BadRequestError with structured field info
-            # parsed = parser.parse(action_in.raw_action_code)
-            # else:
-            #     raise BadRequestError(
-            #       "Invalid raw_action_code", code="INVALID_ACTION_CODE", details={...}
-            #     )
-            pass
+            parsed = self._parser.parse_action(action_in.raw_action_code)
+            action_in = action_in.model_copy(
+                update={
+                    "team_context": parsed.team_context,
+                    "skill_code": parsed.skill_code,
+                    "evaluation_code": parsed.evaluation_code,
+                    "player_jersey_number": parsed.player_jersey_number,
+                    "start_zone": parsed.start_zone,
+                    "start_subzone": parsed.start_subzone,
+                    "end_zone": parsed.end_zone,
+                    "end_subzone": parsed.end_subzone,
+                    "modifiers": "".join(parsed.modifiers) if parsed.modifiers else None,
+                }
+            )
 
-        # Implement logic to recalculate score and match (?)
+        if action_in.rally_id or action_in.sequence_in_rally:
+            rally_id = action_in.rally_id or db_action.rally_id
+            seq = action_in.sequence_in_rally or db_action.sequence_in_rally
+            existing = self.action_crud.get_by_rally_id_and_sequence(
+                db=db, rally_id=rally_id, sequence=seq
+            )
+            if existing and existing.id != db_action.id:
+                raise ConflictError(
+                    "Sequence already present in this rally",
+                    code="SEQUENCE_CONFLICT",
+                    details={
+                        "rally_id": str(rally_id),
+                        "sequence_in_rally": seq,
+                    },
+                )
 
         return self.action_crud.update(db=db, db_obj=db_action, obj_in=action_in)
 
