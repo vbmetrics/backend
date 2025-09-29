@@ -1,16 +1,16 @@
 from collections.abc import Sequence
-from typing import Any, cast
+from typing import cast
 from uuid import UUID
 
 from sqlalchemy.orm import selectinload
-from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
 from app.crud.base import CRUDBase
-from app.models import Action, ActionCreate, ActionUpdate
+from app.models.action import Action
+from app.schemas import ActionCreateDTO, ActionUpdateDTO
 
 
-class CRUDAction(CRUDBase[Action, ActionCreate, ActionUpdate]):
+class CRUDAction(CRUDBase[Action, ActionCreateDTO, ActionUpdateDTO]):
     def get(self, db: Session, id: UUID) -> Action | None:
         """
         Overwrites get method to add eager loading for relationships.
@@ -27,10 +27,10 @@ class CRUDAction(CRUDBase[Action, ActionCreate, ActionUpdate]):
 
     def get_multi(
         self,
-        db,
+        db: Session,
         *,
-        skip=0,
-        limit=100,
+        skip: int = 0,
+        limit: int = 100,
         rally_id: UUID | None = None,
         player_id: UUID | None = None,
     ) -> Sequence[Action]:
@@ -44,12 +44,9 @@ class CRUDAction(CRUDBase[Action, ActionCreate, ActionUpdate]):
             )
         else:
             statement = statement.order_by(
-                cast(ColumnElement[Any], self.model.rally_id),  # TODO: fix models
+                self.model.rally_id,  # type: ignore
                 self.model.sequence_in_rally.asc(),  # type: ignore
             )
-
-        if rally_id:
-            statement = statement.where(self.model.rally_id == rally_id)
 
         if player_id:
             statement = statement.where(self.model.player_id == player_id)
@@ -62,7 +59,7 @@ class CRUDAction(CRUDBase[Action, ActionCreate, ActionUpdate]):
                 selectinload(self.model.player),  # type: ignore[arg-type]
             )
         )
-        # TODO: same cast method in other crud files ?
+
         return cast(Sequence[Action], db.exec(statement).all())
 
     def get_by_rally_id_and_sequence(
