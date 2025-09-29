@@ -16,32 +16,54 @@ from sqlalchemy import (
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .player import Player, PlayerRead
-    from .rally import Rally, RallyRead
+    from .player import Player
+    from .rally import Rally
 
 
-class ActionBase(SQLModel):
+class Action(SQLModel, table=True):
+    __tablename__ = "action"
+    __table_args__ = (
+        UniqueConstraint("rally_id", "sequence_in_rally", name="uq_rally_sequence"),
+        CheckConstraint("sequence_in_rally > 0", name="ck_action_sequence_positive"),
+        CheckConstraint(
+            "(start_zone BETWEEN 1 AND 9) OR start_zone IS NULL",
+            name="ck_start_zone_range",
+        ),
+        CheckConstraint(
+            "(end_zone BETWEEN 1 AND 9) OR end_zone IS NULL", name="ck_end_zone_range"
+        ),
+        CheckConstraint(
+            "(start_subzone ~ '^[A-I]$') OR start_subzone IS NULL",
+            name="ck_start_subzone_valid_char",
+        ),
+        CheckConstraint(
+            "(end_subzone ~ '^[A-I]$') OR end_subzone IS NULL",
+            name="ck_end_subzone_valid_char",
+        ),
+        Index("ix_action_rally_id", "rally_id"),
+        Index("ix_action_player_id", "player_id"),
+        Index("ix_action_rally_seq", "rally_id", "sequence_in_rally"),
+    )
+
+    id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
+
     sequence_in_rally: int = Field(gt=0, description="Action number in rally.")
     raw_action_code: str = Field(sa_column=Column(String(64), index=True))
 
-    # Parsed values
-    team_context: str = Field(sa_column=Column(CHAR(1)))  # description
-    skill_code: str = Field(sa_column=Column(CHAR(1)))  # description
-    evaluation_code: str = Field(sa_column=Column(CHAR(1)))  # description
+    team_context: str = Field(sa_column=Column(CHAR(1)))
+    skill_code: str = Field(sa_column=Column(CHAR(1)))
+    evaluation_code: str = Field(sa_column=Column(CHAR(1)))
 
-    # Optional data
     player_jersey_number: Optional[int] = Field(default=None)
     start_zone: Optional[int] = Field(default=None)
     end_zone: Optional[int] = Field(default=None)
     start_subzone: Optional[str] = Field(default=None, sa_column=Column(CHAR(1)))
     end_subzone: Optional[str] = Field(default=None, sa_column=Column(CHAR(1)))
-    modifiers: Optional[str] = Field(default=None, max_length=12)  # max_length
+    modifiers: Optional[str] = Field(default=None, sa_column=Column(String(12)))
 
-    # Foreign keys
     rally_id: UUID = Field(foreign_key="rally.id")
     player_id: Optional[UUID] = Field(default=None, foreign_key="player.id")
 
-    # Timestamps
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
@@ -58,56 +80,9 @@ class ActionBase(SQLModel):
         ),
     )
 
-
-class Action(ActionBase, table=True):
-    __tablename__ = "action"
-    __table_args__ = (
-        UniqueConstraint("rally_id", "sequence_in_rally", name="uq_rally_sequence"),
-        Index("ix_action_rally_seq_desc", "rally_id", "sequence_in_rally"),
-        CheckConstraint("sequence_in_rally > 0", name="ck_action_sequence_positive"),
-        CheckConstraint(
-            "start_zone >= 1 AND start_zone <= 9", name="ck_start_zone_range"
-        ),
-        CheckConstraint("end_zone >= 1 AND end_zone <= 9", name="ck_end_zone_range"),
-        CheckConstraint(
-            "(start_subzone IN ('A','B','C','D','E','F','G','H','I')) OR start_subzone IS NULL",  # noqa: E501
-            name="ck_start_subzone_in",
-        ),
-        CheckConstraint(
-            "(end_subzone IN ('A','B','C','D','E','F','G','H','I')) OR end_subzone IS NULL",  # noqa: E501
-            name="ck_end_subzone_in",
-        ),
-    )
-
-    id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
-
     # Relationships
     rally: "Rally" = Relationship(back_populates="actions")
     player: Optional["Player"] = Relationship(back_populates="actions")
 
-
-class ActionCreate(ActionBase):
-    pass
-
-
-class ActionRead(ActionBase):
-    id: UUID
-
-
-class ActionReadWithDetails(ActionRead):
-    rally: Optional["RallyRead"] = None
-    player: Optional["PlayerRead"] = None
-
-
-class ActionUpdate(SQLModel):
-    raw_action_code: Optional[str] = None
-    team_context: Optional[str] = None
-    skill_code: Optional[str] = None
-    evaluation_code: Optional[str] = None
-    start_zone: Optional[int] = None
-    end_zone: Optional[int] = None
-    start_subzone: Optional[str] = None
-    end_subzone: Optional[str] = None
-    modifiers: Optional[str] = None
-    player_jersey_number: Optional[int] = None
-    player_id: Optional[UUID] = None
+    def __repr__(self) -> str:
+        return f"<Action id={self.id} rally_id={self.rally_id} seq={self.sequence_in_rally} code={self.raw_action_code}>"  # noqa
