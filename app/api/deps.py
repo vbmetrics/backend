@@ -9,8 +9,10 @@ from sqlmodel import Session
 from app import models
 from app.core.config import settings
 from app.crud.crud_action import action as action_crud
+from app.crud.crud_player import player as player_crud
 from app.db.session import SessionLocal
 from app.services.action_service import ActionService
+from app.services.player_service import PlayerService
 from app.services.user_service import user_service
 from app.utils.code_parser import CodeParser
 
@@ -79,6 +81,10 @@ def get_code_parser() -> CodeParser:
 def get_action_service(parser: CodeParser = Depends(get_code_parser)) -> ActionService:
     # TODO: add other getters
     return ActionService(action_crud=action_crud, code_parser=parser)
+
+
+def get_player_service() -> PlayerService:
+    return PlayerService(player_crud=player_crud)
 
 
 CurrentUser = Annotated[models.User, Depends(get_current_active_user)]

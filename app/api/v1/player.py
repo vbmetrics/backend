@@ -3,49 +3,64 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
-from app import models
 from app.api import deps
-from app.services import player_service
+from app.models.player import PlayerPosition
+from app.schemas import PlayerCreateDTO, PlayerReadDTO, PlayerUpdateDTO
+from app.services.player_service import PlayerService
 
 router = APIRouter(prefix="/player", tags=["Player"])
 
 
-@router.post("/", response_model=models.PlayerRead, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=PlayerReadDTO, status_code=status.HTTP_201_CREATED)
 def create_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),
-    player_in: models.PlayerCreate,
+    player_in: PlayerCreateDTO,
+    service: PlayerService = Depends(deps.get_player_service),
 ):
-    return player_service.create(db=db, player_in=player_in)
+    return service.create(db=db, player_in=player_in)
 
 
-@router.get("/", response_model=list[models.PlayerRead])
+@router.get("/", response_model=list[PlayerReadDTO])
 def read_players_endpoint(
     *,
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
+    nationality_code: str | None = None,
+    playing_position: PlayerPosition | None = None,
+    search: str | None = None,
+    service: PlayerService = Depends(deps.get_player_service),
 ):
-    return player_service.get_all(db=db, skip=skip, limit=limit)
+    return service.get_all(
+        db=db,
+        skip=skip,
+        limit=limit,
+        nationality_code=nationality_code,
+        playing_position=playing_position,
+        search=search,
+    )
 
 
-@router.get("/{player_id}", response_model=models.PlayerRead)
+@router.get("/{player_id}", response_model=PlayerReadDTO)
 def read_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),
     player_id: UUID,
+    service: PlayerService = Depends(deps.get_player_service),
 ):
-    return player_service.get_by_id(db=db, player_id=player_id)
+    return service.get_by_id(db=db, player_id=player_id)
 
 
-@router.patch("/{player_id}", response_model=models.PlayerRead)
+@router.patch("/{player_id}", response_model=PlayerReadDTO)
 def update_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),
     player_id: UUID,
-    player_in: models.PlayerUpdate,
+    player_in: PlayerUpdateDTO,
+    service: PlayerService = Depends(deps.get_player_service),
 ):
-    return player_service.update(db=db, player_id=player_id, player_in=player_in)
+    return service.update(db=db, player_id=player_id, player_in=player_in)
 
 
 @router.delete("/{player_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -53,6 +68,7 @@ def delete_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),
     player_id: UUID,
+    service: PlayerService = Depends(deps.get_player_service),
 ):
-    player_service.delete(db=db, player_id=player_id)
+    service.delete(db=db, player_id=player_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
