@@ -78,25 +78,5 @@ class Player(PlayerBase, table=True):
     team_histories: list["PlayerTeamHistory"] = Relationship(back_populates="player")
     actions: list["Action"] = Relationship(back_populates="player")
 
-
-class PlayerCreate(PlayerBase):
-    pass
-
-
-class PlayerRead(PlayerBase):
-    id: UUID
-
-
-class PlayerUpdate(SQLModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    date_of_birth: Optional[date] = None
-    height_cm: Optional[int] = None
-    weight_kg: Optional[int] = None
-    playing_position: Optional[PlayerPosition] = None
-    dominant_hand: Optional[PlayerHand] = None
-    spike_reach_cm: Optional[int] = None
-    block_reach_cm: Optional[int] = None
-    photo_url: Optional[str] = None
-    bio: Optional[str] = None
-    nationality_code: Optional[str] = None
+    def __repr__(self) -> str:
+        return f"<Player id={self.id} name={self.first_name} {self.last_name} nat={self.nationality_code}>"  # noqa
