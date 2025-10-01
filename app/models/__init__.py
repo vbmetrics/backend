@@ -7,10 +7,6 @@ from .country import Country, CountryBase
 from .match import (
     Match,
     MatchBase,
-    MatchCreate,
-    MatchRead,
-    MatchReadWithDetails,
-    MatchUpdate,
 )
 from .player import (
     Player,
@@ -95,10 +91,6 @@ __all__ = [
     # Match
     "Match",
     "MatchBase",
-    "MatchCreate",
-    "MatchRead",
-    "MatchReadWithDetails",
-    "MatchUpdate",
     # Player
     "Player",
     "PlayerBase",
@@ -164,7 +156,6 @@ __all__ = [
     "User",
 ]
 
-MatchReadWithDetails.model_rebuild()
 RallyReadWithDetails.model_rebuild()
 SetReadWithDetails.model_rebuild()
 StaffTeamHistoryReadWithDetails.model_rebuild()

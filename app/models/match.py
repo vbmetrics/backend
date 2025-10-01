@@ -7,10 +7,10 @@ from sqlalchemy import Column, DateTime, func
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .arena import Arena, ArenaRead
-    from .season import Season, SeasonRead
+    from .arena import Arena
+    from .season import Season
     from .set import Set
-    from .team import Team, TeamRead
+    from .team import Team
 
 
 class MatchBase(SQLModel):
@@ -64,27 +64,5 @@ class Match(MatchBase, table=True):
         sa_relationship_kwargs={"foreign_keys": "[Match.winner_team_id]"}
     )
 
-
-class MatchCreate(MatchBase):
-    pass
-
-
-class MatchRead(MatchBase):
-    id: UUID
-
-
-class MatchReadWithDetails(MatchRead):
-    season: Optional["SeasonRead"] = None
-    arena: Optional["ArenaRead"] = None
-    home_team: Optional["TeamRead"] = None
-    away_team: Optional["TeamRead"] = None
-    winner_team: Optional["TeamRead"] = None
-
-
-class MatchUpdate(SQLModel):
-    match_date: Optional[date] = None
-    arena_id: Optional[UUID] = None
-    spectators: Optional[int] = None
-    home_team_score: Optional[int] = None
-    away_team_score: Optional[int] = None
-    winner_team_id: Optional[UUID] = None
+    def __repr__(self) -> str:
+        return f"<Match id={self.id} date={self.match_date} home={self.home_team_id} away={self.away_team_id} winner={self.winner_team_id}>"  # noqa

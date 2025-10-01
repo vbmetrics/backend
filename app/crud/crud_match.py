@@ -1,30 +1,21 @@
 from collections.abc import Sequence
+from datetime import date
+from typing import Any, cast
 from uuid import UUID
 
-from sqlalchemy import or_
-from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 from app.crud.base import CRUDBase
-from app.models import Match, MatchCreate, MatchUpdate
+from app.models.match import Match
+from app.schemas import MatchCreateDTO, MatchUpdateDTO
 
 
-class CRUDMatch(CRUDBase[Match, MatchCreate, MatchUpdate]):
+class CRUDMatch(CRUDBase[Match, MatchCreateDTO, MatchUpdateDTO]):
     def get(self, db: Session, id: UUID) -> Match | None:
         """
         Overwrites get method to add eager loading for relationships.
         """
-        statement = (
-            select(self.model)
-            .where(self.model.id == id)
-            .options(
-                selectinload(self.model.season),  # type: ignore[arg-type]
-                selectinload(self.model.arena),  # type: ignore[arg-type]
-                selectinload(self.model.home_team),  # type: ignore[arg-type]
-                selectinload(self.model.away_team),  # type: ignore[arg-type]
-                selectinload(self.model.winner_team),  # type: ignore[arg-type]
-            )
-        )
+        statement = select(self.model).where(self.model.id == id)
         return db.exec(statement).first()
 
     def get_multi(
@@ -36,38 +27,43 @@ class CRUDMatch(CRUDBase[Match, MatchCreate, MatchUpdate]):
         season_id: UUID | None = None,
         team_id: UUID | None = None,
         winner_team_id: UUID | None = None,
+        arena_id: UUID | None = None,
+        date_from: date | None = None,
+        date_to: date | None = None,
     ) -> Sequence[Match]:
         """
         Overwrites get_multi method to add dynamic filters.
         """
-        statement = select(self.model).order_by(
-            self.model.match_date.desc().nulls_last()  # type: ignore
-        )
+        statement = select(self.model)
+
+        # Cast columns to Any so mypy doesn't treat them as Optional[...] here
+        home_team_col: Any = self.model.home_team_id
+        away_team_col: Any = self.model.away_team_id
+        season_col: Any = self.model.season_id
+        winner_col: Any = self.model.winner_team_id
+        arena_col: Any = self.model.arena_id
+        match_date_col: Any = self.model.match_date
+        created_at_col: Any = self.model.created_at
 
         if season_id:
-            statement = statement.where(self.model.season_id == season_id)
-
-        if winner_team_id:
-            statement = statement.where(self.model.winner_team_id == winner_team_id)
-
+            statement = statement.where(season_col == season_id)
         if team_id:
             statement = statement.where(
-                or_(
-                    self.model.home_team_id == team_id,  # type: ignore
-                    self.model.away_team_id == team_id,  # type: ignore
-                )
+                (home_team_col == team_id) | (away_team_col == team_id)
             )
+        if winner_team_id:
+            statement = statement.where(winner_col == winner_team_id)
+        if arena_id:
+            statement = statement.where(arena_col == arena_id)
+        if date_from:
+            statement = statement.where(match_date_col >= date_from)
+        if date_to:
+            statement = statement.where(match_date_col <= date_to)
 
         statement = (
-            statement.offset(skip)
-            .limit(limit)
-            .options(
-                selectinload(self.model.season),  # type: ignore[arg-type]
-                selectinload(self.model.home_team),  # type: ignore[arg-type]
-                selectinload(self.model.away_team),  # type: ignore[arg-type]
-            )
+            statement.order_by(match_date_col, created_at_col).offset(skip).limit(limit)
         )
-        return db.exec(statement).all()
+        return cast(Sequence[Match], db.exec(statement).all())
 
 
 match = CRUDMatch(Match)
