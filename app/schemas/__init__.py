@@ -14,6 +14,12 @@ from .arena import (
     ArenaReadDTO,
     ArenaUpdateDTO,
 )
+from .country import (
+    CountryBaseDTO,
+    CountryCreateDTO,
+    CountryReadDTO,
+    CountryUpdateDTO,
+)
 
 # player
 from .player import (
@@ -31,14 +37,19 @@ __all__ = [
     "ActionReadDTO",
     "ActionReadWithDetailsDTO",
     "ActionUpdateDTO",
-    # player
-    "PlayerBaseDTO",
-    "PlayerCreateDTO",
-    "PlayerReadDTO",
-    "PlayerUpdateDTO",
     # arena
     "ArenaBaseDTO",
     "ArenaCreateDTO",
     "ArenaUpdateDTO",
     "ArenaReadDTO",
+    # country
+    "CountryBaseDTO",
+    "CountryCreateDTO",
+    "CountryUpdateDTO",
+    "CountryReadDTO",
+    # player
+    "PlayerBaseDTO",
+    "PlayerCreateDTO",
+    "PlayerReadDTO",
+    "PlayerUpdateDTO",
 ]

@@ -42,14 +42,5 @@ class Country(CountryBase, table=True):
     players: list["Player"] = Relationship(back_populates="nationality")
     teams: list["Team"] = Relationship(back_populates="country")
 
-
-class CountryCreate(CountryBase):
-    pass
-
-
-class CountryRead(CountryBase):
-    pass
-
-
-class CountryUpdate(SQLModel):
-    name: Optional[str] = None
+    def __repr__(self) -> str:
+        return f"<Country code={self.alpha_2_code} name={self.name}>"
