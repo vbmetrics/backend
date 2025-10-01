@@ -7,6 +7,14 @@ from .action import (
     ActionUpdateDTO,
 )
 
+# arena
+from .arena import (
+    ArenaBaseDTO,
+    ArenaCreateDTO,
+    ArenaReadDTO,
+    ArenaUpdateDTO,
+)
+
 # player
 from .player import (
     PlayerBaseDTO,
@@ -28,4 +36,9 @@ __all__ = [
     "PlayerCreateDTO",
     "PlayerReadDTO",
     "PlayerUpdateDTO",
+    # arena
+    "ArenaBaseDTO",
+    "ArenaCreateDTO",
+    "ArenaUpdateDTO",
+    "ArenaReadDTO",
 ]

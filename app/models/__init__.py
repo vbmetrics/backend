@@ -2,10 +2,6 @@ from .action import Action
 from .arena import (
     Arena,
     ArenaBase,
-    ArenaCreate,
-    ArenaRead,
-    ArenaReadWithCountry,
-    ArenaUpdate,
 )
 from .country import Country, CountryBase, CountryCreate, CountryRead, CountryUpdate
 from .match import (
@@ -93,10 +89,6 @@ __all__ = [
     # Arena
     "Arena",
     "ArenaBase",
-    "ArenaCreate",
-    "ArenaRead",
-    "ArenaReadWithCountry",
-    "ArenaUpdate",
     # Country
     "Country",
     "CountryBase",
@@ -175,7 +167,6 @@ __all__ = [
     "User",
 ]
 
-ArenaReadWithCountry.model_rebuild()
 MatchReadWithDetails.model_rebuild()
 RallyReadWithDetails.model_rebuild()
 SetReadWithDetails.model_rebuild()
