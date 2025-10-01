@@ -10,10 +10,12 @@ from app import models
 from app.core.config import settings
 from app.crud.crud_action import action as action_crud
 from app.crud.crud_arena import arena as arena_crud
+from app.crud.crud_country import country as country_crud
 from app.crud.crud_player import player as player_crud
 from app.db.session import SessionLocal
 from app.services.action_service import ActionService
 from app.services.arena_service import ArenaService
+from app.services.country_service import CountryService
 from app.services.player_service import PlayerService
 from app.services.user_service import user_service
 from app.utils.code_parser import CodeParser
@@ -90,6 +92,10 @@ def get_player_service() -> PlayerService:
 
 def get_arena_service() -> ArenaService:
     return ArenaService(arena_crud=arena_crud)
+
+
+def get_country_service() -> CountryService:
+    return CountryService(country_crud=country_crud)
 
 
 CurrentUser = Annotated[models.User, Depends(get_current_active_user)]
