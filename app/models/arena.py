@@ -7,7 +7,7 @@ from sqlalchemy import Column, DateTime, func
 from sqlmodel import CheckConstraint, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .country import Country, CountryRead
+    from .country import Country
     from .match import Match
     from .team import Team
 
@@ -46,22 +46,5 @@ class Arena(ArenaBase, table=True):
     country: "Country" = Relationship(back_populates="arenas")
     home_team: list["Team"] = Relationship(back_populates="home_arena")
 
-
-class ArenaCreate(ArenaBase):
-    pass
-
-
-class ArenaRead(ArenaBase):
-    id: UUID
-
-
-class ArenaReadWithCountry(ArenaRead):
-    country: Optional["CountryRead"] = None
-
-
-class ArenaUpdate(SQLModel):
-    name: Optional[str] = None
-    city: Optional[str] = None
-    address: Optional[str] = None
-    capacity: Optional[int] = None
-    country_code: Optional[str] = None
+    def __repr__(self) -> str:
+        return f"<Arena id={self.id} name={self.name} city={self.city} country={self.country_code}>"  # noqa
