@@ -39,6 +39,14 @@ from .player import (
     PlayerUpdateDTO,
 )
 
+# player_team_history
+from .player_team_history import (
+    PlayerTeamHistoryBaseDTO,
+    PlayerTeamHistoryCreateDTO,
+    PlayerTeamHistoryReadDTO,
+    PlayerTeamHistoryUpdateDTO,
+)
+
 __all__ = [
     # action
     "ActionBaseDTO",
@@ -61,6 +69,11 @@ __all__ = [
     "MatchCreateDTO",
     "MatchUpdateDTO",
     "MatchReadDTO",
+    # player_team_history
+    "PlayerTeamHistoryBaseDTO",
+    "PlayerTeamHistoryCreateDTO",
+    "PlayerTeamHistoryUpdateDTO",
+    "PlayerTeamHistoryReadDTO",
     # player
     "PlayerBaseDTO",
     "PlayerCreateDTO",
