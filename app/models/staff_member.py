@@ -51,17 +51,5 @@ class StaffMember(StaffMemberBase, table=True):
         back_populates="staff_member"
     )
 
-
-class StaffMemberCreate(StaffMemberBase):
-    pass
-
-
-class StaffMemberRead(StaffMemberBase):
-    id: UUID
-
-
-class StaffMemberUpdate(SQLModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    role_type: Optional[StaffRoleType] = None
-    nationality_code: Optional[str] = None
+    def __repr__(self) -> str:
+        return f"<StaffMember id={self.id} name={self.first_name} {self.last_name} role={self.role_type}>"  # noqa

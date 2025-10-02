@@ -71,6 +71,22 @@ from .set import (
     SetUpdateDTO,
 )
 
+# staff_member
+from .staff_member import (
+    StaffMemberBaseDTO,
+    StaffMemberCreateDTO,
+    StaffMemberReadDTO,
+    StaffMemberUpdateDTO,
+)
+
+# staff_team_history
+from .staff_team_history import (
+    StaffTeamHistoryBaseDTO,
+    StaffTeamHistoryCreateDTO,
+    StaffTeamHistoryReadDTO,
+    StaffTeamHistoryUpdateDTO,
+)
+
 __all__ = [
     # action
     "ActionBaseDTO",
@@ -118,4 +134,14 @@ __all__ = [
     "SetCreateDTO",
     "SetUpdateDTO",
     "SetReadDTO",
+    # staff_member
+    "StaffMemberBaseDTO",
+    "StaffMemberCreateDTO",
+    "StaffMemberUpdateDTO",
+    "StaffMemberReadDTO",
+    # staff_team_history
+    "StaffTeamHistoryBaseDTO",
+    "StaffTeamHistoryCreateDTO",
+    "StaffTeamHistoryReadDTO",
+    "StaffTeamHistoryUpdateDTO",
 ]
