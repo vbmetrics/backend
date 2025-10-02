@@ -47,6 +47,14 @@ from .player_team_history import (
     PlayerTeamHistoryUpdateDTO,
 )
 
+# rally
+from .rally import (
+    RallyBaseDTO,
+    RallyCreateDTO,
+    RallyReadDTO,
+    RallyUpdateDTO,
+)
+
 __all__ = [
     # action
     "ActionBaseDTO",
@@ -79,4 +87,9 @@ __all__ = [
     "PlayerCreateDTO",
     "PlayerReadDTO",
     "PlayerUpdateDTO",
+    # rally
+    "RallyBaseDTO",
+    "RallyCreateDTO",
+    "RallyUpdateDTO",
+    "RallyReadDTO",
 ]
