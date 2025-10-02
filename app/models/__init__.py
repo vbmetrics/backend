@@ -17,10 +17,6 @@ from .player import (
 from .player_team_history import (
     PlayerTeamHistory,
     PlayerTeamHistoryBase,
-    PlayerTeamHistoryCreate,
-    PlayerTeamHistoryRead,
-    PlayerTeamHistoryReadWithDetails,
-    PlayerTeamHistoryUpdate,
 )
 from .rally import (
     Rally,
@@ -134,10 +130,6 @@ __all__ = [
     # PlayerTeamHistory
     "PlayerTeamHistory",
     "PlayerTeamHistoryBase",
-    "PlayerTeamHistoryCreate",
-    "PlayerTeamHistoryRead",
-    "PlayerTeamHistoryReadWithDetails",
-    "PlayerTeamHistoryUpdate",
     # StaffTeamHistory
     "StaffTeamHistory",
     "StaffTeamHistoryBase",

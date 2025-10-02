@@ -13,12 +13,14 @@ from app.crud.crud_arena import arena as arena_crud
 from app.crud.crud_country import country as country_crud
 from app.crud.crud_match import match as match_crud
 from app.crud.crud_player import player as player_crud
+from app.crud.crud_player_team_history import player_team_history as pth_crud
 from app.db.session import SessionLocal
 from app.services.action_service import ActionService
 from app.services.arena_service import ArenaService
 from app.services.country_service import CountryService
 from app.services.match_service import MatchService
 from app.services.player_service import PlayerService
+from app.services.player_team_history_service import PlayerTeamHistoryService
 from app.services.user_service import user_service
 from app.utils.code_parser import CodeParser
 
@@ -102,6 +104,10 @@ def get_country_service() -> CountryService:
 
 def get_match_service() -> MatchService:
     return MatchService(match_crud=match_crud)
+
+
+def get_player_team_history_service() -> PlayerTeamHistoryService:
+    return PlayerTeamHistoryService(player_team_history_crud=pth_crud)
 
 
 CurrentUser = Annotated[models.User, Depends(get_current_active_user)]

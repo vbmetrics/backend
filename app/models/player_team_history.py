@@ -7,9 +7,9 @@ from sqlalchemy import Column, DateTime, func
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .player import Player, PlayerRead
-    from .season import Season, SeasonRead
-    from .team import Team, TeamRead
+    from .player import Player
+    from .season import Season
+    from .team import Team
 
 
 class PlayerTeamHistoryBase(SQLModel):
@@ -49,22 +49,5 @@ class PlayerTeamHistory(PlayerTeamHistoryBase, table=True):
     team: "Team" = Relationship(back_populates="player_histories")
     season: "Season" = Relationship(back_populates="player_team_histories")
 
-
-class PlayerTeamHistoryCreate(PlayerTeamHistoryBase):
-    pass
-
-
-class PlayerTeamHistoryRead(PlayerTeamHistoryBase):
-    id: UUID
-
-
-class PlayerTeamHistoryUpdate(SQLModel):
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
-    jersey_number: Optional[int] = None
-
-
-class PlayerTeamHistoryReadWithDetails(PlayerTeamHistoryRead):
-    player: Optional["PlayerRead"] = None
-    team: Optional["TeamRead"] = None
-    season: Optional["SeasonRead"] = None
+    def __repr__(self) -> str:
+        return f"<PTH id={self.id} player={self.player_id} team={self.team_id} season={self.season_id} {self.start_date}->{self.end_date}>"  # noqa
