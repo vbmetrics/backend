@@ -8,8 +8,8 @@ from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .action import Action
-    from .set import Set, SetRead
-    from .team import Team, TeamRead
+    from .set import Set
+    from .team import Team
 
 
 class RallyBase(SQLModel):
@@ -60,23 +60,5 @@ class Rally(RallyBase, table=True):
     )
     actions: list["Action"] = Relationship(back_populates="rally")
 
-
-class RallyCreate(RallyBase):
-    pass
-
-
-class RallyRead(RallyBase):
-    id: UUID
-
-
-class RallyReadWithDetails(RallyRead):
-    set: Optional["SetRead"] = None
-    serve_team: Optional["TeamRead"] = None
-    score_team: Optional["TeamRead"] = None
-
-
-class RallyUpdate(SQLModel):
-    raw_rally_code: Optional[str] = None
-    comment: Optional[str] = None
-    serve_team_id: Optional[UUID] = None
-    score_team_id: Optional[UUID] = None
+    def __repr__(self) -> str:
+        return f"<Rally id={self.id} set={self.set_id} no={self.rally_number_in_set}>"
