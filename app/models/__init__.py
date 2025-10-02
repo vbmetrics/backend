@@ -6,14 +6,7 @@ from .player import Player, PlayerBase, PlayerHand, PlayerPosition
 from .player_team_history import PlayerTeamHistory, PlayerTeamHistoryBase
 from .rally import Rally, RallyBase
 from .season import Season, SeasonBase, SeasonType
-from .set import (
-    Set,
-    SetBase,
-    SetCreate,
-    SetRead,
-    SetReadWithDetails,
-    SetUpdate,
-)
+from .set import Set, SetBase
 from .staff_member import (
     StaffMember,
     StaffMemberBase,
@@ -74,10 +67,6 @@ __all__ = [
     # Set
     "Set",
     "SetBase",
-    "SetCreate",
-    "SetRead",
-    "SetReadWithDetails",
-    "SetUpdate",
     # StaffMember
     "StaffMember",
     "StaffMemberBase",
@@ -113,5 +102,4 @@ __all__ = [
     "User",
 ]
 
-SetReadWithDetails.model_rebuild()
 StaffTeamHistoryReadWithDetails.model_rebuild()

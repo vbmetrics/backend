@@ -7,9 +7,9 @@ from sqlalchemy import CheckConstraint, Column, DateTime, func
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .match import Match, MatchRead
+    from .match import Match
     from .rally import Rally
-    from .team import Team, TeamRead
+    from .team import Team
 
 
 class SetBase(SQLModel):
@@ -50,22 +50,8 @@ class Set(SetBase, table=True):
     rallies: list["Rally"] = Relationship(back_populates="set")
     winner_team: Optional["Team"] = Relationship(back_populates="won_sets")
 
-
-class SetCreate(SetBase):
-    pass
-
-
-class SetRead(SetBase):
-    id: UUID
-
-
-class SetReadWithDetails(SetRead):
-    match: Optional["MatchRead"] = None
-    winner_team: Optional["TeamRead"] = None
-
-
-class SetUpdate(SQLModel):
-    home_team_score: Optional[int] = None
-    away_team_score: Optional[int] = None
-    winner_team_id: Optional[UUID] = None
-    duration_minutes: Optional[int] = None
+    def __repr__(self) -> str:
+        return (
+            f"<Set id={self.id} match={self.match_id} no={self.set_number} "
+            f"{self.home_team_score}:{self.away_team_score} winner={self.winner_team_id}>"  # noqa
+        )

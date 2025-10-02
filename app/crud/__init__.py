@@ -6,7 +6,7 @@ from .crud_player import player
 from .crud_player_team_history import player_team_history
 from .crud_rally import rally
 from .crud_season import season
-from .crud_set import set
+from .crud_set import vb_set
 from .crud_staff_member import staff_member
 from .crud_staff_team_history import staff_team_history
 from .crud_team import team
@@ -21,7 +21,7 @@ __all__ = [
     "player",
     "rally",
     "season",
-    "set",
+    "vb_set",
     "staff_member",
     "staff_team_history",
     "team",

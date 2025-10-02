@@ -63,6 +63,14 @@ from .season import (
     SeasonUpdateDTO,
 )
 
+# set
+from .set import (
+    SetBaseDTO,
+    SetCreateDTO,
+    SetReadDTO,
+    SetUpdateDTO,
+)
+
 __all__ = [
     # action
     "ActionBaseDTO",
@@ -105,4 +113,9 @@ __all__ = [
     "SeasonCreateDTO",
     "SeasonUpdateDTO",
     "SeasonReadDTO",
+    # set
+    "SetBaseDTO",
+    "SetCreateDTO",
+    "SetUpdateDTO",
+    "SetReadDTO",
 ]
