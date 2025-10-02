@@ -55,6 +55,14 @@ from .rally import (
     RallyUpdateDTO,
 )
 
+# season
+from .season import (
+    SeasonBaseDTO,
+    SeasonCreateDTO,
+    SeasonReadDTO,
+    SeasonUpdateDTO,
+)
+
 __all__ = [
     # action
     "ActionBaseDTO",
@@ -92,4 +100,9 @@ __all__ = [
     "RallyCreateDTO",
     "RallyUpdateDTO",
     "RallyReadDTO",
+    # season
+    "SeasonBaseDTO",
+    "SeasonCreateDTO",
+    "SeasonUpdateDTO",
+    "SeasonReadDTO",
 ]
