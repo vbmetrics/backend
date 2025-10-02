@@ -7,9 +7,9 @@ from sqlalchemy import Column, DateTime, func
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from .season import Season, SeasonRead
-    from .staff_member import StaffMember, StaffMemberRead
-    from .team import Team, TeamRead
+    from .season import Season
+    from .staff_member import StaffMember
+    from .team import Team
 
 
 class StaffTeamHistoryBase(SQLModel):
@@ -44,20 +44,5 @@ class StaffTeamHistory(StaffTeamHistoryBase, table=True):
     team: "Team" = Relationship(back_populates="staff_histories")
     season: "Season" = Relationship(back_populates="staff_team_histories")
 
-
-class StaffTeamHistoryCreate(StaffTeamHistoryBase):
-    pass
-
-
-class StaffTeamHistoryRead(StaffTeamHistoryBase):
-    id: UUID
-
-
-class StaffTeamHistoryUpdate(SQLModel):
-    role: Optional[str] = None
-
-
-class StaffTeamHistoryReadWithDetails(StaffTeamHistoryRead):
-    staff_member: Optional["StaffMemberRead"] = None
-    team: Optional["TeamRead"] = None
-    season: Optional["SeasonRead"] = None
+    def __repr__(self) -> str:
+        return f"<STH id={self.id} staff={self.staff_member_id} team={self.team_id} season={self.season_id} role={self.role}>"  # noqa

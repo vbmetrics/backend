@@ -1,53 +1,72 @@
 from collections.abc import Sequence
 from uuid import UUID
 
-from fastapi import HTTPException, status
 from sqlmodel import Session
 
-from app import crud, models
 from app.crud.crud_staff_team_history import CRUDStaffTeamHistory
+from app.models.staff_team_history import StaffTeamHistory
+from app.schemas import (
+    StaffTeamHistoryCreateDTO,
+    StaffTeamHistoryUpdateDTO,
+)
+from app.services.errors import ConflictError, NotFoundError
 
 
 class StaffTeamHistoryService:
     def __init__(self, staff_team_history_crud: CRUDStaffTeamHistory):
-        self.staff_team_history_crud = staff_team_history_crud
+        self.sth_crud = staff_team_history_crud
 
-    def get_by_id(self, db: Session, history_id: UUID) -> models.StaffTeamHistory:
-        db_history = self.staff_team_history_crud.get(db=db, id=history_id)
+    def get_by_id(self, db: Session, sth_id: UUID) -> StaffTeamHistory:
+        db_history = self.sth_crud.get(db=db, id=sth_id)
         if not db_history:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Staff-Team History record not found",
+            raise NotFoundError(
+                "Staff team history not found",
+                code="STH_NOT_FOUND",
+                details={"id": str(sth_id)},
             )
         return db_history
 
     def get_all(
         self,
         db: Session,
+        *,
         skip: int = 0,
         limit: int = 100,
-    ) -> Sequence[models.StaffTeamHistory]:
-        return self.staff_team_history_crud.get_multi(db=db, skip=skip, limit=limit)
-
-    def create(
-        self, db: Session, history_in: models.StaffTeamHistoryCreate
-    ) -> models.StaffTeamHistory:
-        return self.staff_team_history_crud.create(db=db, obj_in=history_in)
-
-    def update(
-        self,
-        db: Session,
-        history_id: UUID,
-        history_in: models.StaffTeamHistoryUpdate,
-    ) -> models.StaffTeamHistory:
-        db_history = self.get_by_id(db=db, history_id=history_id)
-        return self.staff_team_history_crud.update(
-            db=db, db_obj=db_history, obj_in=history_in
+        staff_member_id: UUID | None = None,
+        team_id: UUID | None = None,
+        season_id: UUID | None = None,
+    ) -> Sequence[StaffTeamHistory]:
+        return self.sth_crud.get_multi(
+            db=db,
+            skip=skip,
+            limit=limit,
+            staff_member_id=staff_member_id,
+            team_id=team_id,
+            season_id=season_id,
         )
 
-    def delete(self, db: Session, history_id: UUID) -> models.StaffTeamHistory:
-        db_history = self.get_by_id(db=db, history_id=history_id)
-        return self.staff_team_history_crud.remove(db=db, db_obj=db_history)
+    def create(
+        self, db: Session, sth_in: StaffTeamHistoryCreateDTO
+    ) -> StaffTeamHistory:
+        if self.sth_crud.exists_for_season(
+            db, staff_member_id=sth_in.staff_member_id, season_id=sth_in.season_id
+        ):
+            raise ConflictError(
+                "Staff member already assigned in this season",
+                code="STH_SEASON_CONFLICT",
+                details={
+                    "staff_member_id": str(sth_in.staff_member_id),
+                    "season_id": str(sth_in.season_id),
+                },
+            )
+        return self.sth_crud.create(db=db, obj_in=sth_in)
 
+    def update(
+        self, db: Session, sth_id: UUID, sth_in: StaffTeamHistoryUpdateDTO
+    ) -> StaffTeamHistory:
+        obj = self.get_by_id(db=db, sth_id=sth_id)
+        return self.sth_crud.update(db=db, db_obj=obj, obj_in=sth_in)
 
-staff_team_history_service = StaffTeamHistoryService(crud.staff_team_history)
+    def delete(self, db: Session, sth_id: UUID) -> StaffTeamHistory:
+        obj = self.get_by_id(db=db, sth_id=sth_id)
+        return self.sth_crud.remove(db=db, db_obj=obj)
