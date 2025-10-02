@@ -15,6 +15,7 @@ from app.crud.crud_match import match as match_crud
 from app.crud.crud_player import player as player_crud
 from app.crud.crud_player_team_history import player_team_history as pth_crud
 from app.crud.crud_rally import rally as rally_crud
+from app.crud.crud_season import season as season_crud
 from app.db.session import SessionLocal
 from app.services.action_service import ActionService
 from app.services.arena_service import ArenaService
@@ -23,6 +24,7 @@ from app.services.match_service import MatchService
 from app.services.player_service import PlayerService
 from app.services.player_team_history_service import PlayerTeamHistoryService
 from app.services.rally_service import RallyService
+from app.services.season_service import SeasonService
 from app.services.user_service import user_service
 from app.utils.code_parser import CodeParser
 
@@ -116,6 +118,10 @@ def get_rally_service() -> RallyService:
     return RallyService(
         rally_crud_dep=rally_crud, action_crud_dep=action_crud, parser=CodeParser()
     )
+
+
+def get_season_service() -> SeasonService:
+    return SeasonService(season_crud=season_crud)
 
 
 CurrentUser = Annotated[models.User, Depends(get_current_active_user)]

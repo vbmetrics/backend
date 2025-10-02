@@ -56,17 +56,5 @@ class Season(SeasonBase, table=True):
         back_populates="season"
     )
 
-
-class SeasonCreate(SeasonBase):
-    pass
-
-
-class SeasonRead(SeasonBase):
-    id: UUID
-
-
-class SeasonUpdate(SQLModel):
-    name: Optional[str] = None
-    season_type: Optional[SeasonType] = None
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    def __repr__(self) -> str:
+        return f"<Season id={self.id} name={self.name} type={self.season_type} {self.start_date}->{self.end_date}>"  # noqa
