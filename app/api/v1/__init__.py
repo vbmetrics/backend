@@ -11,6 +11,7 @@ from . import (
     rally,
     season,
     set,
+    special_event,
     staff_member,
     staff_team_history,
     team,
@@ -31,3 +32,4 @@ api_router.include_router(match.router)
 api_router.include_router(set.router)
 api_router.include_router(rally.router)
 api_router.include_router(action.router)
+api_router.include_router(special_event.router)

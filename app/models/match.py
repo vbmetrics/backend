@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .arena import Arena
     from .season import Season
     from .set import Set
+    from .special_event import SpecialEvent
     from .team import Team
 
 
@@ -52,6 +53,7 @@ class Match(MatchBase, table=True):
     season: Optional["Season"] = Relationship(back_populates="matches")
     arena: Optional["Arena"] = Relationship(back_populates="matches")
     sets: list["Set"] = Relationship(back_populates="match")
+    special_events: list["SpecialEvent"] = Relationship(back_populates="match")
     home_team: "Team" = Relationship(
         back_populates="home_matches",
         sa_relationship_kwargs={"foreign_keys": "[Match.home_team_id]"},

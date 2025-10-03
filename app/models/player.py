@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .action import Action
     from .country import Country
     from .player_team_history import PlayerTeamHistory
+    from .special_event import SpecialEvent
 
 
 class PlayerPosition(str, enum.Enum):
@@ -77,6 +78,7 @@ class Player(PlayerBase, table=True):
     nationality: "Country" = Relationship(back_populates="players")
     team_histories: list["PlayerTeamHistory"] = Relationship(back_populates="player")
     actions: list["Action"] = Relationship(back_populates="player")
+    special_events: list["SpecialEvent"] = Relationship(back_populates="player")
 
     def __repr__(self) -> str:
         return f"<Player id={self.id} name={self.first_name} {self.last_name} nat={self.nationality_code}>"  # noqa

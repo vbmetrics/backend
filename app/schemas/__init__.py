@@ -70,6 +70,12 @@ from .set import (
     SetReadDTO,
     SetUpdateDTO,
 )
+from .special_event import (
+    SpecialEventBaseDTO,
+    SpecialEventCreateDTO,
+    SpecialEventReadDTO,
+    SpecialEventUpdateDTO,
+)
 
 # staff_member
 from .staff_member import (
@@ -142,6 +148,11 @@ __all__ = [
     "SetCreateDTO",
     "SetUpdateDTO",
     "SetReadDTO",
+    # special_event
+    "SpecialEventBaseDTO",
+    "SpecialEventCreateDTO",
+    "SpecialEventUpdateDTO",
+    "SpecialEventReadDTO",
     # staff_member
     "StaffMemberBaseDTO",
     "StaffMemberCreateDTO",

@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from .player_team_history import PlayerTeamHistory
     from .rally import Rally
     from .set import Set
+    from .special_event import SpecialEvent
     from .staff_team_history import StaffTeamHistory
 
 
@@ -58,6 +59,7 @@ class Team(TeamBase, table=True):
     home_arena: Optional["Arena"] = Relationship(back_populates="home_team")
     staff_histories: list["StaffTeamHistory"] = Relationship(back_populates="team")
     player_histories: list["PlayerTeamHistory"] = Relationship(back_populates="team")
+    special_events: list["SpecialEvent"] = Relationship(back_populates="team")
     won_sets: list["Set"] = Relationship(back_populates="winner_team")
     home_matches: list["Match"] = Relationship(
         back_populates="home_team",
