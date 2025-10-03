@@ -7,30 +7,9 @@ from .player_team_history import PlayerTeamHistory, PlayerTeamHistoryBase
 from .rally import Rally, RallyBase
 from .season import Season, SeasonBase, SeasonType
 from .set import Set, SetBase
-from .staff_member import (
-    StaffMember,
-    StaffMemberBase,
-    StaffMemberCreate,
-    StaffMemberRead,
-    StaffMemberUpdate,
-    StaffRoleType,
-)
-from .staff_team_history import (
-    StaffTeamHistory,
-    StaffTeamHistoryBase,
-    StaffTeamHistoryCreate,
-    StaffTeamHistoryRead,
-    StaffTeamHistoryReadWithDetails,
-    StaffTeamHistoryUpdate,
-)
-from .team import (
-    Team,
-    TeamBase,
-    TeamCreate,
-    TeamRead,
-    TeamType,
-    TeamUpdate,
-)
+from .staff_member import StaffMember, StaffMemberBase, StaffRoleType
+from .staff_team_history import StaffTeamHistory, StaffTeamHistoryBase
+from .team import Team, TeamBase, TeamType
 from .token import Token, TokenData
 from .user import (
     User,
@@ -70,16 +49,10 @@ __all__ = [
     # StaffMember
     "StaffMember",
     "StaffMemberBase",
-    "StaffMemberCreate",
-    "StaffMemberRead",
-    "StaffMemberUpdate",
     "StaffRoleType",
     # Team
     "Team",
     "TeamBase",
-    "TeamCreate",
-    "TeamRead",
-    "TeamUpdate",
     "TeamType",
     # PlayerTeamHistory
     "PlayerTeamHistory",
@@ -87,10 +60,6 @@ __all__ = [
     # StaffTeamHistory
     "StaffTeamHistory",
     "StaffTeamHistoryBase",
-    "StaffTeamHistoryCreate",
-    "StaffTeamHistoryRead",
-    "StaffTeamHistoryReadWithDetails",
-    "StaffTeamHistoryUpdate",
     # Token
     "Token",
     "TokenData",
@@ -101,5 +70,3 @@ __all__ = [
     "UserUpdate",
     "User",
 ]
-
-StaffTeamHistoryReadWithDetails.model_rebuild()

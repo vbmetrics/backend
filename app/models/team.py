@@ -76,20 +76,5 @@ class Team(TeamBase, table=True):
         sa_relationship_kwargs={"foreign_keys": "[Rally.score_team_id]"},
     )
 
-
-class TeamCreate(TeamBase):
-    pass
-
-
-class TeamRead(TeamBase):
-    id: UUID
-
-
-class TeamUpdate(SQLModel):
-    name: Optional[str] = None
-    team_type: Optional[TeamType] = None
-    logo_url: Optional[str] = None
-    website_url: Optional[str] = None
-    email: Optional[str] = None
-    country_code: Optional[str] = None
-    home_arena_id: Optional[UUID] = None
+    def __repr__(self) -> str:
+        return f"<Team id={self.id} name={self.name} type={self.team_type} country={self.country_code}>"  # noqa

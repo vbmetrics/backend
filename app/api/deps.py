@@ -19,6 +19,7 @@ from app.crud.crud_season import season as season_crud
 from app.crud.crud_set import vb_set as set_crud
 from app.crud.crud_staff_member import staff_member as staff_member_crud
 from app.crud.crud_staff_team_history import staff_team_history as sth_crud
+from app.crud.crud_team import team as team_crud
 from app.db.session import SessionLocal
 from app.services.action_service import ActionService
 from app.services.arena_service import ArenaService
@@ -31,6 +32,7 @@ from app.services.season_service import SeasonService
 from app.services.set_service import SetService
 from app.services.staff_member_service import StaffMemberService
 from app.services.staff_team_history_service import StaffTeamHistoryService
+from app.services.team_service import TeamService
 from app.services.user_service import user_service
 from app.utils.code_parser import CodeParser
 
@@ -140,6 +142,10 @@ def get_staff_member_service() -> StaffMemberService:
 
 def get_staff_team_history_service() -> StaffTeamHistoryService:
     return StaffTeamHistoryService(staff_team_history_crud=sth_crud)
+
+
+def get_team_service() -> TeamService:
+    return TeamService(team_crud=team_crud)
 
 
 CurrentUser = Annotated[models.User, Depends(get_current_active_user)]
