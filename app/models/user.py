@@ -4,7 +4,8 @@ from enum import Enum
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import Column, DateTime, String, func
+from pydantic import EmailStr
+from sqlalchemy import Boolean, Column, DateTime, String, func, text
 from sqlalchemy import Enum as SA_Enum
 from sqlmodel import Field, SQLModel
 
@@ -17,12 +18,19 @@ class UserRole(str, Enum):
 
 
 class UserBase(SQLModel):
-    is_active: bool = True
-    email: str = Field(
-        sa_column=Column(String(320), unique=True, index=True, nullable=False)
-    )
+    email: EmailStr = Field(index=True)
     full_name: Optional[str] = None
-    role: UserRole = Field(default=UserRole.user, sa_column=Column(SA_Enum(UserRole)))
+    role: UserRole = Field(
+        sa_column=Column(SA_Enum(UserRole), nullable=False, server_default="user")
+    )
+    is_active: bool = Field(
+        default=True,
+        sa_column=Column(Boolean, nullable=False, server_default=text("true")),
+    )
+    is_superuser: bool = Field(
+        default=False,
+        sa_column=Column(Boolean, nullable=False, server_default=text("false")),
+    )
     hashed_password: str = Field(sa_column=Column(String(255), nullable=False))
     created_at: Optional[datetime] = Field(
         default=None,
