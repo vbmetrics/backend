@@ -87,6 +87,14 @@ from .staff_team_history import (
     StaffTeamHistoryUpdateDTO,
 )
 
+# team
+from .team import (
+    TeamBaseDTO,
+    TeamCreateDTO,
+    TeamReadDTO,
+    TeamUpdateDTO,
+)
+
 __all__ = [
     # action
     "ActionBaseDTO",
@@ -144,4 +152,9 @@ __all__ = [
     "StaffTeamHistoryCreateDTO",
     "StaffTeamHistoryReadDTO",
     "StaffTeamHistoryUpdateDTO",
+    # team
+    "TeamBaseDTO",
+    "TeamCreateDTO",
+    "TeamUpdateDTO",
+    "TeamReadDTO",
 ]

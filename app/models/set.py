@@ -51,7 +51,4 @@ class Set(SetBase, table=True):
     winner_team: Optional["Team"] = Relationship(back_populates="won_sets")
 
     def __repr__(self) -> str:
-        return (
-            f"<Set id={self.id} match={self.match_id} no={self.set_number} "
-            f"{self.home_team_score}:{self.away_team_score} winner={self.winner_team_id}>"  # noqa
-        )
+        return f"<Set id={self.id} match={self.match_id} no={self.set_number} {self.home_team_score}:{self.away_team_score} winner={self.winner_team_id}>"  # noqa
