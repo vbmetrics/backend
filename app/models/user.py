@@ -4,24 +4,26 @@ from enum import Enum
 from typing import Optional
 from uuid import UUID
 
-from pydantic import field_validator
-from sqlalchemy import Column, DateTime, func
+from sqlalchemy import Column, DateTime, String, func
 from sqlalchemy import Enum as SA_Enum
 from sqlmodel import Field, SQLModel
 
 
 class UserRole(str, Enum):
-    USER = "user"
-    ADMIN = "admin"
+    admin = "admin"
+    user = "user"
+    coach = "coach"
+    analyst = "analyst"
 
 
 class UserBase(SQLModel):
-    email: str = Field(unique=True, index=True)
     is_active: bool = True
-    is_superuser: bool = False
-    role: UserRole = Field(
-        sa_column=Column(SA_Enum(UserRole, native_enum=False), default=UserRole.USER)
+    email: str = Field(
+        sa_column=Column(String(320), unique=True, index=True, nullable=False)
     )
+    full_name: Optional[str] = None
+    role: UserRole = Field(default=UserRole.user, sa_column=Column(SA_Enum(UserRole)))
+    hashed_password: str = Field(sa_column=Column(String(255), nullable=False))
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
@@ -40,37 +42,9 @@ class UserBase(SQLModel):
 
 
 class User(UserBase, table=True):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id: Optional[UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
 
-    hashed_password: str
-
-
-class UserCreate(UserBase):
-    password: str
-
-    @field_validator("password")
-    @classmethod
-    def validate_password(cls, v: str) -> str:
-        if len(v) < 12:
-            raise ValueError("Password must have at least 12 characters.")
-        if len(v) > 64:
-            raise ValueError("Password cannot be longer than 64 characters.")
-        if not any(char.isdigit() for char in v):
-            raise ValueError("Password must include at least one digit.")
-        if not any(char.isupper() for char in v):
-            raise ValueError("Password must include at least one upper letter.")
-
-        return v
-
-
-class UserRead(UserBase):
-    id: UUID
-
-
-class UserUpdate(SQLModel):
-    email: Optional[str] = None
-    password: Optional[str] = None
-    is_active: Optional[bool] = None
-    is_superuser: Optional[bool] = None
+    def __repr__(self) -> str:
+        return f"<User id={self.id} email={self.email} role={self.role}>"

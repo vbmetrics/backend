@@ -16,7 +16,7 @@ router = APIRouter(
     "/",
     response_model=CountryReadDTO,
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(deps.require_role(UserRole.ADMIN))],
+    dependencies=[Depends(deps.require_role(UserRole.admin))],
 )
 def create_country_endpoint(
     *,
@@ -60,7 +60,7 @@ def read_country_endpoint(
 @router.patch(
     "/{country_code}",
     response_model=CountryReadDTO,
-    dependencies=[Depends(deps.require_role(UserRole.ADMIN))],
+    dependencies=[Depends(deps.require_role(UserRole.admin))],
 )
 def update_country_endpoint(
     *,
@@ -75,7 +75,7 @@ def update_country_endpoint(
 @router.delete(
     "/{country_code}",
     status_code=status.HTTP_204_NO_CONTENT,
-    dependencies=[Depends(deps.require_role(UserRole.ADMIN))],
+    dependencies=[Depends(deps.require_role(UserRole.admin))],
 )
 def delete_country_endpoint(
     *,

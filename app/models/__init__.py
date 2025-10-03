@@ -11,14 +11,8 @@ from .special_event import SpecialEvent, SpecialEventBase, SpecialEventType
 from .staff_member import StaffMember, StaffMemberBase, StaffRoleType
 from .staff_team_history import StaffTeamHistory, StaffTeamHistoryBase
 from .team import Team, TeamBase, TeamType
-from .token import Token, TokenData
-from .user import (
-    User,
-    UserBase,
-    UserCreate,
-    UserRead,
-    UserUpdate,
-)
+from .token import RefreshToken
+from .user import User, UserBase, UserRole
 
 __all__ = [
     # Action
@@ -66,12 +60,9 @@ __all__ = [
     "TeamBase",
     "TeamType",
     # Token
-    "Token",
-    "TokenData",
+    "RefreshToken",
     # User
-    "UserBase",
-    "UserCreate",
-    "UserRead",
-    "UserUpdate",
     "User",
+    "UserBase",
+    "UserRole",
 ]
