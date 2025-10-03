@@ -32,9 +32,12 @@ class UserUpdateDTO(BaseModel):
     role: Optional[UserRole] = None
     password: Optional[str] = Field(default=None, min_length=8, max_length=128)
     is_active: Optional[bool] = None
+    is_superuser: bool | None = None  # only in admin-protected routes
 
 
 class UserReadDTO(UserBaseDTO):
     id: UUID
+    is_superuser: bool
+
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None

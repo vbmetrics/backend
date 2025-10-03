@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, Request, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, Request, Response, status
 from sqlmodel import Session
 
 from app.api import deps
@@ -42,10 +41,10 @@ def refresh(*, db: Session = Depends(deps.get_db), body: RefreshDTO):
     )
 
 
-@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
 def logout(*, db: Session = Depends(deps.get_db), body: RefreshDTO):
-    auth_service.logout(db, refresh_token=body.refresh_token)
-    return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content=None)
+    auth_service.logout(db=db, refresh_token=body.refresh_token)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/me", response_model=MeReadDTO)
