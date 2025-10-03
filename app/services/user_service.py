@@ -1,30 +1,63 @@
-from fastapi import HTTPException, status
+from collections.abc import Sequence
+from uuid import UUID
+
 from sqlmodel import Session
 
-from app import crud, models
-from app.crud.crud_user import CRUDUser
+from app.core.security import get_password_hash
+from app.crud.crud_user import user as user_crud
+from app.models.user import User
+from app.schemas.user import UserCreateDTO, UserUpdateDTO
+from app.services.errors import ConflictError, NotFoundError
 
 
 class UserService:
-    def __init__(self, user_crud: CRUDUser):
+    def __init__(self):
         self.user_crud = user_crud
 
-    def get_by_email(self, db: Session, *, email: str) -> models.User | None:
-        return self.user_crud.get_by_email(db=db, email=email)
-
-    def create(self, db: Session, *, user_in: models.UserCreate) -> models.User:
-        db_user = self.get_by_email(db=db, email=user_in.email)
-        if db_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already registered",
+    def get_by_id(self, db: Session, user_id: UUID) -> User:
+        obj: User | None = self.user_crud.get(db=db, id=user_id)
+        if not obj:
+            raise NotFoundError(
+                "User not found",
+                code="USER_NOT_FOUND",
+                details={"user_id": str(user_id)},
             )
-        return self.user_crud.create(db=db, obj_in=user_in)
+        return obj
 
-    def authenticate(
-        self, db: Session, *, email: str, password: str
-    ) -> models.User | None:
-        return self.user_crud.authenticate(db=db, email=email, password=password)
+    def get_by_email(self, db: Session, email: str) -> User | None:
+        obj: User | None = self.user_crud.get_by_email(db=db, email=email)
+        return obj
 
+    def get_all(
+        self, db: Session, *, skip: int = 0, limit: int = 100, search: str | None = None
+    ) -> Sequence[User]:
+        objs: Sequence[User] = self.user_crud.get_multi(
+            db=db, skip=skip, limit=limit, search=search
+        )
+        return objs
 
-user_service = UserService(crud.user)
+    def create(self, db: Session, body: UserCreateDTO) -> User:
+        exists = self.user_crud.get_by_email(db, body.email)
+        if exists:
+            raise ConflictError(
+                "Email already in use",
+                code="EMAIL_TAKEN",
+                details={"email": body.email},
+            )
+        hashed = get_password_hash(body.password)
+        payload = body.model_copy(update={"hashed_password": hashed, "password": None})
+        created: User = self.user_crud.create(db=db, obj_in=payload)
+        return created
+
+    def update(self, db: Session, user_id: UUID, body: UserUpdateDTO) -> User:
+        obj = self.get_by_id(db=db, user_id=user_id)
+        data = body.model_dump(exclude_unset=True)
+        if "password" in data and data["password"]:
+            data["hashed_password"] = get_password_hash(data.pop("password"))
+        updated: User = self.user_crud.update(db=db, db_obj=obj, obj_in=data)
+        return updated
+
+    def delete(self, db: Session, user_id: UUID) -> User:
+        obj = self.get_by_id(db=db, user_id=user_id)
+        removed: User = self.user_crud.remove(db=db, db_obj=obj)
+        return removed

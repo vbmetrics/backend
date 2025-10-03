@@ -1,60 +1,58 @@
-from typing import Annotated
+from fastapi import APIRouter, Depends, Request, status
+from fastapi.responses import JSONResponse
+from sqlmodel import Session
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from fastapi.security import OAuth2PasswordRequestForm
+from app.api import deps
+from app.schemas.auth import LoginDTO, MeReadDTO, RefreshDTO, TokenPairDTO
+from app.schemas.user import UserCreateDTO, UserReadDTO
+from app.services.auth_service import AuthService
+from app.services.user_service import UserService
 
-from app import models
-from app.api.deps import CurrentUser, DBSession
-from app.core import security
-from app.services.user_service import user_service
+router = APIRouter(prefix="/auth", tags=["Auth"])
+auth_service = AuthService()
+user_service = UserService()
 
-router = APIRouter(
-    prefix="/auth",
-    tags=["Authentication & Users"],
+
+@router.post(
+    "/register", response_model=UserReadDTO, status_code=status.HTTP_201_CREATED
 )
+def register(*, db: Session = Depends(deps.get_db), body: UserCreateDTO):
+    return user_service.create(db=db, body=body)
 
 
-@router.post("/register", response_model=models.UserRead)
-def register_user(
-    *,
-    db: DBSession,
-    user_in: models.UserCreate,
-):
-    user = user_service.create(db=db, user_in=user_in)
-    return user
-
-
-@router.post("/token", response_model=models.Token)
-def login_for_access_token(
-    response: Response,
-    db: DBSession,
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-):
-    user = user_service.authenticate(
-        db=db, email=form_data.username, password=form_data.password
+@router.post("/login", response_model=TokenPairDTO)
+def login(*, request: Request, db: Session = Depends(deps.get_db), body: LoginDTO):
+    ua = request.headers.get("user-agent")
+    ip = request.client.host if request.client else None
+    access, refresh, expires_in = auth_service.login(
+        db, email=body.email, password=body.password, user_agent=ua, ip=ip
     )
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-        )
-    elif not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user",
-        )
-    access_token = security.create_access_token(data={"sub": user.email})
-    refresh_token = security.create_refresh_token(data={"sub": user.email})
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=True,
-        samesite="lax",
+    return TokenPairDTO(
+        access_token=access, refresh_token=refresh, expires_in=expires_in
     )
-    return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/user/me", response_model=models.UserRead)
-def read_current_user(current_user: CurrentUser):
-    return current_user
+@router.post("/refresh", response_model=TokenPairDTO)
+def refresh(*, db: Session = Depends(deps.get_db), body: RefreshDTO):
+    access, refresh, expires_in = auth_service.refresh(
+        db, refresh_token=body.refresh_token
+    )
+    return TokenPairDTO(
+        access_token=access, refresh_token=refresh, expires_in=expires_in
+    )
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(*, db: Session = Depends(deps.get_db), body: RefreshDTO):
+    auth_service.logout(db, refresh_token=body.refresh_token)
+    return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content=None)
+
+
+@router.get("/me", response_model=MeReadDTO)
+def me(current_user=Depends(deps.get_current_user)):
+    return MeReadDTO(
+        id=str(current_user.id),
+        email=current_user.email,
+        full_name=current_user.full_name,
+        role=current_user.role.value,
+    )

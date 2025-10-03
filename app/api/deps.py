@@ -1,13 +1,12 @@
 from collections.abc import Generator
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
 from sqlmodel import Session
 
-from app import models
-from app.core.config import settings
+from app.core.security import decode_token
 from app.crud.crud_action import action as action_crud
 from app.crud.crud_arena import arena as arena_crud
 from app.crud.crud_country import country as country_crud
@@ -21,7 +20,9 @@ from app.crud.crud_special_event import special_event as special_event_crud
 from app.crud.crud_staff_member import staff_member as staff_member_crud
 from app.crud.crud_staff_team_history import staff_team_history as sth_crud
 from app.crud.crud_team import team as team_crud
+from app.crud.crud_user import user as user_crud
 from app.db.session import SessionLocal
+from app.models.user import User, UserRole
 from app.services.action_service import ActionService
 from app.services.arena_service import ArenaService
 from app.services.country_service import CountryService
@@ -35,7 +36,6 @@ from app.services.special_event_service import SpecialEventService
 from app.services.staff_member_service import StaffMemberService
 from app.services.staff_team_history_service import StaffTeamHistoryService
 from app.services.team_service import TeamService
-from app.services.user_service import user_service
 from app.utils.code_parser import CodeParser
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
@@ -53,47 +53,57 @@ DBSession = Annotated[Session, Depends(get_db)]
 Token = Annotated[str, Depends(oauth2_scheme)]
 
 
-def get_current_user(db: DBSession, token: Token) -> models.User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+
+
+def get_current_user(
+    db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
+) -> User:
     try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        payload = decode_token(token)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         )
-        token_data = models.token.TokenData(email=payload.get("sub"))
-    except (JWTError, AttributeError):
-        credentials_exception
 
-    if token_data.email is None:
-        raise credentials_exception
+    if payload.get("type") != "access":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type"
+        )
 
-    user = user_service.get_by_email(db=db, email=token_data.email)
+    sub = payload.get("sub")
+    try:
+        uid = UUID(str(sub))
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid subject"
+        )
 
+    user = user_crud.get(db, uid)  # type: ignore[misc]
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
+        )
     return user
 
 
-def get_current_active_user(
-    current_user: Annotated[models.User, Depends(get_current_user)],
-) -> models.User:
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+def get_current_active_user(current: User = Depends(get_current_user)) -> User:
+    if not current.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Inactive user"
+        )
+    return current
 
 
-def require_role(required_role: models.user.UserRole):
-    def check_user_role(current_user: CurrentUser) -> None:
-        if current_user.role != required_role:
+def require_role(*allowed: UserRole):
+    def _dep(current: User = Depends(get_current_active_user)) -> User:
+        if current.role not in allowed:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="The user does not have right privileges",
+                status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient role"
             )
+        return current
 
-    return check_user_role
+    return _dep
 
 
 def get_code_parser() -> CodeParser:
@@ -152,6 +162,3 @@ def get_team_service() -> TeamService:
 
 def get_special_event_service() -> SpecialEventService:
     return SpecialEventService(special_event_crud=special_event_crud)
-
-
-CurrentUser = Annotated[models.User, Depends(get_current_active_user)]
