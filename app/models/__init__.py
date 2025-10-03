@@ -7,6 +7,7 @@ from .player_team_history import PlayerTeamHistory, PlayerTeamHistoryBase
 from .rally import Rally, RallyBase
 from .season import Season, SeasonBase, SeasonType
 from .set import Set, SetBase
+from .special_event import SpecialEvent, SpecialEventBase, SpecialEventType
 from .staff_member import StaffMember, StaffMemberBase, StaffRoleType
 from .staff_team_history import StaffTeamHistory, StaffTeamHistoryBase
 from .team import Team, TeamBase, TeamType
@@ -36,6 +37,9 @@ __all__ = [
     "PlayerBase",
     "PlayerPosition",
     "PlayerHand",
+    # PlayerTeamHistory
+    "PlayerTeamHistory",
+    "PlayerTeamHistoryBase",
     # Rally
     "Rally",
     "RallyBase",
@@ -46,20 +50,21 @@ __all__ = [
     # Set
     "Set",
     "SetBase",
+    # SpecialEvent
+    "SpecialEvent",
+    "SpecialEventBase",
+    "SpecialEventType",
     # StaffMember
     "StaffMember",
     "StaffMemberBase",
     "StaffRoleType",
+    # StaffTeamHistory
+    "StaffTeamHistory",
+    "StaffTeamHistoryBase",
     # Team
     "Team",
     "TeamBase",
     "TeamType",
-    # PlayerTeamHistory
-    "PlayerTeamHistory",
-    "PlayerTeamHistoryBase",
-    # StaffTeamHistory
-    "StaffTeamHistory",
-    "StaffTeamHistoryBase",
     # Token
     "Token",
     "TokenData",
