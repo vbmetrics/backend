@@ -18,10 +18,10 @@ services:
   caddy:
     image: caddy:latest
     restart: always
+    env_file:
+      - ./secrets.env
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp" # Dla HTTP/3
+      - "8080:80"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data

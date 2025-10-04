@@ -1,3 +1,6 @@
-vbmetrics.bieda.it {
+http://:80 {
+    basicauth {
+        {$HTTP_BASIC_AUTH_USER} {$HTTP_BASIC_AUTH_PASSWORD}
+    }
     reverse_proxy api:8000
 }
