@@ -109,6 +109,13 @@ class MatchService:
         )
 
     def create(self, db: Session, match_in: MatchCreateDTO) -> Match:
+        if (
+            match_in.winner_team_id is None
+            and match_in.home_team_score is None
+            and match_in.away_team_score is None
+        ):
+            return self.match_crud.create(db=db, obj_in=match_in)
+
         winner = self._coerce_or_validate_winner(
             home_team_id=match_in.home_team_id,
             away_team_id=match_in.away_team_id,
