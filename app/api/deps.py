@@ -26,6 +26,7 @@ from app.models.user import User, UserRole
 from app.services.action_service import ActionService
 from app.services.arena_service import ArenaService
 from app.services.country_service import CountryService
+from app.services.match_flow_service import MatchFlowService
 from app.services.match_service import MatchService
 from app.services.player_service import PlayerService
 from app.services.player_team_history_service import PlayerTeamHistoryService
@@ -162,3 +163,8 @@ def get_team_service() -> TeamService:
 
 def get_special_event_service() -> SpecialEventService:
     return SpecialEventService(special_event_crud=special_event_crud)
+
+
+def get_match_flow_service() -> MatchFlowService:
+    # jeśli będziesz miał osobne CRUDy, wstrzyknij je tutaj
+    return MatchFlowService()

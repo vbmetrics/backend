@@ -6,6 +6,7 @@ from . import (
     auth,
     country,
     match,
+    match_flow,
     player,
     player_team_history,
     rally,
@@ -33,3 +34,4 @@ api_router.include_router(set.router)
 api_router.include_router(rally.router)
 api_router.include_router(action.router)
 api_router.include_router(special_event.router)
+api_router.include_router(match_flow.router)
