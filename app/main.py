@@ -12,6 +12,7 @@ app = FastAPI(
 
 register_error_handlers(app)
 
+# TODO : Update origins for production - use environment variables
 origins = [
     "http://localhost",
     "http://localhost:3000",

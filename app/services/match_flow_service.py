@@ -6,8 +6,6 @@ from uuid import UUID
 
 from sqlmodel import Session, select
 
-# === ZAŁOŻONE MODELE (proponowane) ===
-# Jeśli masz już swoje, podmień importy/nazwy pól.
 from app.models.match import Match
 from app.models.rally import Rally
 from app.models.set import Set

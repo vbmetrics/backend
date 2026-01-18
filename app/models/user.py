@@ -1,6 +1,5 @@
 import uuid
 from datetime import datetime
-from enum import Enum
 from typing import Optional
 from uuid import UUID
 
@@ -9,16 +8,12 @@ from sqlalchemy import Boolean, Column, DateTime, String, func, text
 from sqlalchemy import Enum as SA_Enum
 from sqlmodel import Field, SQLModel
 
-
-class UserRole(str, Enum):
-    admin = "admin"
-    user = "user"
-    coach = "coach"
-    analyst = "analyst"
+# ZMIANA: Import z core zamiast definicji lokalnej
+from app.core.enums import UserRole
 
 
 class UserBase(SQLModel):
-    email: EmailStr = Field(index=True)
+    email: EmailStr = Field(index=True, unique=True) # Warto dodać unique=True dla bazy
     full_name: Optional[str] = None
     role: UserRole = Field(
         sa_column=Column(SA_Enum(UserRole), nullable=False, server_default="user")
@@ -32,6 +27,8 @@ class UserBase(SQLModel):
         sa_column=Column(Boolean, nullable=False, server_default=text("false")),
     )
     hashed_password: str = Field(sa_column=Column(String(255), nullable=False))
+
+    # Timestamps
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
@@ -47,7 +44,6 @@ class UserBase(SQLModel):
             onupdate=func.now(),
         ),
     )
-
 
 class User(UserBase, table=True):
     __tablename__ = "user"

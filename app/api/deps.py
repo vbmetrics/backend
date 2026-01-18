@@ -26,6 +26,7 @@ from app.models.user import User, UserRole
 from app.services.action_service import ActionService
 from app.services.arena_service import ArenaService
 from app.services.country_service import CountryService
+from app.services.live_service import LiveService
 from app.services.match_flow_service import MatchFlowService
 from app.services.match_service import MatchService
 from app.services.player_service import PlayerService
@@ -37,7 +38,7 @@ from app.services.special_event_service import SpecialEventService
 from app.services.staff_member_service import StaffMemberService
 from app.services.staff_team_history_service import StaffTeamHistoryService
 from app.services.team_service import TeamService
-from app.utils.code_parser import CodeParser
+from app.utils.code_parser import CodeParser  # not a class
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
@@ -168,3 +169,12 @@ def get_special_event_service() -> SpecialEventService:
 def get_match_flow_service() -> MatchFlowService:
     # jeśli będziesz miał osobne CRUDy, wstrzyknij je tutaj
     return MatchFlowService()
+
+
+def get_live_service() -> LiveService:
+    return LiveService(
+        match_crud=match_crud,
+        set_crud=set_crud,
+        rally_crud=rally_crud,
+        action_crud=action_crud,
+    )
