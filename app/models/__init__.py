@@ -1,6 +1,7 @@
 from .action import Action
 from .arena import Arena, ArenaBase
 from .country import Country, CountryBase
+from .lineup import Lineup, LineupBase
 from .match import Match, MatchBase
 from .player import Player, PlayerBase, PlayerHand, PlayerPosition
 from .player_team_history import PlayerTeamHistory, PlayerTeamHistoryBase
@@ -65,4 +66,7 @@ __all__ = [
     "User",
     "UserBase",
     "UserRole",
+    # Lineup
+    "Lineup",
+    "LineupBase",
 ]

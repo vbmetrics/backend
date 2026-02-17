@@ -10,6 +10,7 @@ from app.core.security import decode_token
 from app.crud.crud_action import action as action_crud
 from app.crud.crud_arena import arena as arena_crud
 from app.crud.crud_country import country as country_crud
+from app.crud.crud_lineup import lineup as lineup
 from app.crud.crud_match import match as match_crud
 from app.crud.crud_player import player as player_crud
 from app.crud.crud_player_team_history import player_team_history as pth_crud
@@ -26,6 +27,7 @@ from app.models.user import User, UserRole
 from app.services.action_service import ActionService
 from app.services.arena_service import ArenaService
 from app.services.country_service import CountryService
+from app.services.lineup_service import LineupService
 from app.services.live_service import LiveService
 from app.services.match_flow_service import MatchFlowService
 from app.services.match_service import MatchService
@@ -167,7 +169,7 @@ def get_special_event_service() -> SpecialEventService:
 
 
 def get_match_flow_service() -> MatchFlowService:
-    # jeśli będziesz miał osobne CRUDy, wstrzyknij je tutaj
+    # TODO: Inject dependencies if needed
     return MatchFlowService()
 
 
@@ -178,3 +180,7 @@ def get_live_service() -> LiveService:
         rally_crud=rally_crud,
         action_crud=action_crud,
     )
+
+
+def get_lineup_service() -> LineupService:
+    return LineupService(lineup_crud=lineup)

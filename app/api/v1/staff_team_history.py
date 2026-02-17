@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
 from app.api import deps
+from app.models.user import UserRole
 from app.schemas import (
     StaffTeamHistoryCreateDTO,
     StaffTeamHistoryReadDTO,
@@ -18,7 +19,10 @@ router = APIRouter(
 
 
 @router.post(
-    "/", response_model=StaffTeamHistoryReadDTO, status_code=status.HTTP_201_CREATED
+    "/",
+    response_model=StaffTeamHistoryReadDTO,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
 )
 def create_staff_team_history_endpoint(
     *,
@@ -29,7 +33,11 @@ def create_staff_team_history_endpoint(
     return service.create(db=db, sth_in=sth_in)
 
 
-@router.get("/", response_model=list[StaffTeamHistoryReadDTO])
+@router.get(
+    "/",
+    response_model=list[StaffTeamHistoryReadDTO],
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_staff_team_histories_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -50,7 +58,11 @@ def read_staff_team_histories_endpoint(
     )
 
 
-@router.get("/{sth_id}", response_model=StaffTeamHistoryReadDTO)
+@router.get(
+    "/{sth_id}",
+    response_model=StaffTeamHistoryReadDTO,
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_staff_team_history_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -60,7 +72,11 @@ def read_staff_team_history_endpoint(
     return service.get_by_id(db=db, sth_id=sth_id)
 
 
-@router.patch("/{sth_id}", response_model=StaffTeamHistoryReadDTO)
+@router.patch(
+    "/{sth_id}",
+    response_model=StaffTeamHistoryReadDTO,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def update_staff_team_history_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -71,7 +87,11 @@ def update_staff_team_history_endpoint(
     return service.update(db=db, sth_id=sth_id, sth_in=sth_in)
 
 
-@router.delete("/{sth_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{sth_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def delete_staff_team_history_endpoint(
     *,
     db: Session = Depends(deps.get_db),

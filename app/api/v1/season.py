@@ -6,13 +6,19 @@ from sqlmodel import Session
 
 from app.api import deps
 from app.models.season import SeasonType
+from app.models.user import UserRole  # <--- NOWY IMPORT
 from app.schemas import SeasonCreateDTO, SeasonReadDTO, SeasonUpdateDTO
 from app.services.season_service import SeasonService
 
 router = APIRouter(prefix="/season", tags=["Season"])
 
 
-@router.post("/", response_model=SeasonReadDTO, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=SeasonReadDTO,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def create_season_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -22,7 +28,11 @@ def create_season_endpoint(
     return service.create(db=db, season_in=season_in)
 
 
-@router.get("/", response_model=list[SeasonReadDTO])
+@router.get(
+    "/",
+    response_model=list[SeasonReadDTO],
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_seasons_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -47,7 +57,11 @@ def read_seasons_endpoint(
     )
 
 
-@router.get("/{season_id}", response_model=SeasonReadDTO)
+@router.get(
+    "/{season_id}",
+    response_model=SeasonReadDTO,
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_season_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -57,7 +71,11 @@ def read_season_endpoint(
     return service.get_by_id(db=db, season_id=season_id)
 
 
-@router.patch("/{season_id}", response_model=SeasonReadDTO)
+@router.patch(
+    "/{season_id}",
+    response_model=SeasonReadDTO,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def update_season_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -68,7 +86,11 @@ def update_season_endpoint(
     return service.update(db=db, season_id=season_id, season_in=season_in)
 
 
-@router.delete("/{season_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{season_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def delete_season_endpoint(
     *,
     db: Session = Depends(deps.get_db),

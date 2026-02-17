@@ -5,13 +5,19 @@ from sqlmodel import Session
 
 from app.api import deps
 from app.models.player import PlayerPosition
+from app.models.user import UserRole
 from app.schemas import PlayerCreateDTO, PlayerReadDTO, PlayerUpdateDTO
 from app.services.player_service import PlayerService
 
 router = APIRouter(prefix="/player", tags=["Player"])
 
 
-@router.post("/", response_model=PlayerReadDTO, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=PlayerReadDTO,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def create_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -21,7 +27,11 @@ def create_player_endpoint(
     return service.create(db=db, player_in=player_in)
 
 
-@router.get("/", response_model=list[PlayerReadDTO])
+@router.get(
+    "/",
+    response_model=list[PlayerReadDTO],
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_players_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -42,7 +52,11 @@ def read_players_endpoint(
     )
 
 
-@router.get("/{player_id}", response_model=PlayerReadDTO)
+@router.get(
+    "/{player_id}",
+    response_model=PlayerReadDTO,
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -52,7 +66,11 @@ def read_player_endpoint(
     return service.get_by_id(db=db, player_id=player_id)
 
 
-@router.patch("/{player_id}", response_model=PlayerReadDTO)
+@router.patch(
+    "/{player_id}",
+    response_model=PlayerReadDTO,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def update_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -63,7 +81,11 @@ def update_player_endpoint(
     return service.update(db=db, player_id=player_id, player_in=player_in)
 
 
-@router.delete("/{player_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{player_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def delete_player_endpoint(
     *,
     db: Session = Depends(deps.get_db),

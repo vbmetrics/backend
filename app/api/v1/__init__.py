@@ -5,6 +5,8 @@ from . import (
     arena,
     auth,
     country,
+    lineup,
+    live,
     match,
     match_flow,
     player,
@@ -35,3 +37,5 @@ api_router.include_router(rally.router)
 api_router.include_router(action.router)
 api_router.include_router(special_event.router)
 api_router.include_router(match_flow.router)
+api_router.include_router(live.router)
+api_router.include_router(lineup.router)

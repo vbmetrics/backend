@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
 from app.api import deps
+from app.models.user import UserRole
 from app.schemas import ArenaCreateDTO, ArenaReadDTO, ArenaUpdateDTO
 from app.services.arena_service import ArenaService
 
@@ -13,7 +14,12 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=ArenaReadDTO, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=ArenaReadDTO,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def create_arena_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -23,7 +29,11 @@ def create_arena_endpoint(
     return service.create(db=db, arena_in=arena_in)
 
 
-@router.get("/", response_model=list[ArenaReadDTO])
+@router.get(
+    "/",
+    response_model=list[ArenaReadDTO],
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_arenas_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -44,7 +54,11 @@ def read_arenas_endpoint(
     )
 
 
-@router.get("/{arena_id}", response_model=ArenaReadDTO)
+@router.get(
+    "/{arena_id}",
+    response_model=ArenaReadDTO,
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_arena_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -54,7 +68,11 @@ def read_arena_endpoint(
     return service.get_by_id(db=db, arena_id=arena_id)
 
 
-@router.patch("/{arena_id}", response_model=ArenaReadDTO)
+@router.patch(
+    "/{arena_id}",
+    response_model=ArenaReadDTO,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def update_arena_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -65,7 +83,11 @@ def update_arena_endpoint(
     return service.update(db=db, arena_id=arena_id, arena_in=arena_in)
 
 
-@router.delete("/{arena_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{arena_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def delete_arena_endpoint(
     *,
     db: Session = Depends(deps.get_db),

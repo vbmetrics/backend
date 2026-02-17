@@ -47,10 +47,12 @@ class MatchService:
             return winner_team_id
 
         if home_score == away_score:
-            raise BadRequestError(
-                "home_team_score and away_team_score cannot be equal",
-                code="DRAW_NOT_ALLOWED",
-            )
+            if winner_team_id is not None:
+                raise BadRequestError(
+                    "Cannot assign a winner to a tied match.",
+                    code="WINNER_IN_DRAW",
+                )
+            return None
 
         inferred = home_team_id if home_score > away_score else away_team_id
         if winner_team_id is None:
@@ -88,7 +90,7 @@ class MatchService:
         db: Session,
         *,
         skip: int = 0,
-        limit: int = 0,
+        limit: int = 100,
         season_id: UUID | None = None,
         team_id: UUID | None = None,
         winner_team_id: UUID | None = None,

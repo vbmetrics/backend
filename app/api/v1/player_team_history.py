@@ -1,10 +1,11 @@
 from datetime import date
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Query, Response, status
 from sqlmodel import Session
 
 from app.api import deps
+from app.models.user import UserRole
 from app.schemas import (
     PlayerTeamHistoryCreateDTO,
     PlayerTeamHistoryReadDTO,
@@ -22,6 +23,7 @@ router = APIRouter(
     "/",
     response_model=PlayerTeamHistoryReadDTO,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
 )
 def create_player_team_history_endpoint(
     *,
@@ -32,7 +34,11 @@ def create_player_team_history_endpoint(
     return service.create(db=db, history_in=history_in)
 
 
-@router.get("/", response_model=list[PlayerTeamHistoryReadDTO])
+@router.get(
+    "/",
+    response_model=list[PlayerTeamHistoryReadDTO],
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_player_team_histories_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -40,7 +46,7 @@ def read_player_team_histories_endpoint(
     limit: int = 100,
     player_id: UUID | None = None,
     team_id: UUID | None = None,
-    season_id: UUID | None = None,
+    season_id: list[UUID] | None = Query(default=None),
     active_on: date | None = None,
     service: PlayerTeamHistoryService = Depends(deps.get_player_team_history_service),
 ):
@@ -55,7 +61,11 @@ def read_player_team_histories_endpoint(
     )
 
 
-@router.get("/{pth_id}", response_model=PlayerTeamHistoryReadDTO)
+@router.get(
+    "/{pth_id}",
+    response_model=PlayerTeamHistoryReadDTO,
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def read_player_team_history_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -65,7 +75,11 @@ def read_player_team_history_endpoint(
     return service.get_by_id(db=db, pth_id=pth_id)
 
 
-@router.patch("/{pth_id}", response_model=PlayerTeamHistoryReadDTO)
+@router.patch(
+    "/{pth_id}",
+    response_model=PlayerTeamHistoryReadDTO,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def update_player_team_history_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -76,7 +90,11 @@ def update_player_team_history_endpoint(
     return service.update(db=db, pth_id=pth_id, history_in=history_in)
 
 
-@router.delete("/{pth_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{pth_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def delete_player_team_history_endpoint(
     *,
     db: Session = Depends(deps.get_db),

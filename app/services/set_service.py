@@ -24,14 +24,14 @@ class SetService:
 
     @staticmethod
     def _validate_scores(home: int | None, away: int | None) -> None:
-        if home is not None and away is not None and home == away:
-            raise BadRequestError("Set cannot end in a draw", code="DRAW_NOT_ALLOWED")
+        pass
 
     @staticmethod
     def _winner_from_scores(
         home_team_id: UUID, away_team_id: UUID, home: int | None, away: int | None
     ) -> UUID | None:
-        if home is None or away is None:
+        # DODANE: Jeśli jest remis (np. 0:0 na starcie), nie ma zwycięzcy
+        if home is None or away is None or home == away:
             return None
         return home_team_id if home > away else away_team_id
 

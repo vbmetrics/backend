@@ -46,7 +46,7 @@ class PlayerTeamHistoryService:
         limit: int = 100,
         player_id: UUID | None = None,
         team_id: UUID | None = None,
-        season_id: UUID | None = None,
+        season_id: list[UUID] | None = None,
         active_on: date | None = None,
     ) -> Sequence[PlayerTeamHistory]:
         return self.pth_crud.get_multi(

@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from datetime import date
-from typing import Any, cast
+from typing import Any
 from uuid import UUID
 
 from sqlmodel import Session, select
@@ -32,38 +32,35 @@ class CRUDPlayerTeamHistory(
         limit: int = 100,
         player_id: UUID | None = None,
         team_id: UUID | None = None,
-        season_id: UUID | None = None,
+        season_id: list[UUID] | None = None,
         active_on: date | None = None,
     ) -> Sequence[PlayerTeamHistory]:
         """
         Overwrites get_multi method to add dynamic filters.
         """
-        statement = select(self.model)
-
-        # Cast columns to Any for mypy (optional columns in typing)
-        player_col: Any = self.model.player_id
-        team_col: Any = self.model.team_id
-        season_col: Any = self.model.season_id
-        start_col: Any = self.model.start_date
-        end_col: Any = self.model.end_date
+        query = select(PlayerTeamHistory)
 
         if player_id:
-            statement = statement.where(player_col == player_id)
-        if team_id:
-            statement = statement.where(team_col == team_id)
-        if season_id:
-            statement = statement.where(season_col == season_id)
-        if active_on:
-            statement = statement.where(start_col <= active_on).where(
-                (end_col.is_(None)) | (end_col >= active_on)
-            )  # type: ignore[attr-defined]
+            query = query.where(PlayerTeamHistory.player_id == player_id)
 
-        statement = (
-            statement.order_by(start_col.desc(), end_col.desc())
-            .offset(skip)
-            .limit(limit)
-        )
-        return cast(Sequence[PlayerTeamHistory], db.exec(statement).all())
+        if team_id:
+            query = query.where(PlayerTeamHistory.team_id == team_id)
+
+        # KLUCZOWA ZMIANA: Obsługa listy sezonów w bazie danych
+        if season_id:
+            query = query.where(PlayerTeamHistory.season_id.in_(season_id))
+
+        if active_on:
+            query = query.where(
+                (PlayerTeamHistory.start_date <= active_on)
+                & (
+                    (PlayerTeamHistory.end_date >= active_on)
+                    | (PlayerTeamHistory.end_date is None)
+                )
+            )
+
+        query = query.offset(skip).limit(limit)
+        return db.exec(query).all()
 
     def any_overlapping(
         self,

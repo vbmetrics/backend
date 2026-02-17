@@ -5,6 +5,7 @@ from sqlmodel import Session
 
 from app.api import deps
 from app.models.team import TeamType
+from app.models.user import UserRole
 from app.schemas import TeamCreateDTO, TeamReadDTO, TeamUpdateDTO
 from app.services.team_service import TeamService
 
@@ -14,7 +15,12 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=TeamReadDTO, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=TeamReadDTO,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def create_team_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -24,7 +30,11 @@ def create_team_endpoint(
     return service.create(db=db, team_in=team_in)
 
 
-@router.get("/", response_model=list[TeamReadDTO])
+@router.get(
+    "/",
+    response_model=list[TeamReadDTO],
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def get_teams_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -47,7 +57,11 @@ def get_teams_endpoint(
     )
 
 
-@router.get("/{team_id}", response_model=TeamReadDTO)
+@router.get(
+    "/{team_id}",
+    response_model=TeamReadDTO,
+    dependencies=[Depends(deps.get_current_active_user)]
+)
 def get_team_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -57,7 +71,11 @@ def get_team_endpoint(
     return service.get_by_id(db=db, team_id=team_id)
 
 
-@router.patch("/{team_id}", response_model=TeamReadDTO)
+@router.patch(
+    "/{team_id}",
+    response_model=TeamReadDTO,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def update_team_endpoint(
     *,
     db: Session = Depends(deps.get_db),
@@ -68,7 +86,11 @@ def update_team_endpoint(
     return service.update(db=db, team_id=team_id, team_in=team_in)
 
 
-@router.delete("/{team_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{team_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(deps.require_role(UserRole.admin))]
+)
 def delete_team_endpoint(
     *,
     db: Session = Depends(deps.get_db),
