@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -57,6 +58,6 @@ class PlayerUpdateDTO(BaseModel):
 
 
 class PlayerReadDTO(PlayerBaseDTO):
-    id: int
+    id: UUID
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None

@@ -26,7 +26,8 @@ class CRUDUser(CRUDBase[User, UserCreateDTO | UserRegisterDTO, UserUpdateDTO]):
     ) -> Sequence[User]:
         stmt = select(self.model)
         if search:
-            # Upewnij się, że pole email w modelu UserBase ma typ, który SQLModel rozpoznaje jako str dla .ilike
+            # Upewnij się, że pole email w modelu UserBase ma typ, który SQLModel
+            # rozpoznaje jako str dla .ilike
             stmt = stmt.where(self.model.email.ilike(f"%{search}%"))  # type: ignore
         stmt = stmt.offset(skip).limit(limit)
         return cast(Sequence[User], db.exec(stmt).all())

@@ -19,10 +19,10 @@ class ActionBaseDTO(BaseModel):
     end_zone: Optional[int] = Field(default=None, ge=1, le=9)
     start_subzone: Optional[str] = Field(
         default=None, min_length=1, max_length=1
-    )  # 'A'..'I'
+    )  # 'A'..'D'
     end_subzone: Optional[str] = Field(
         default=None, min_length=1, max_length=1
-    )  # 'A'..'I'
+    )  # 'A'..'D'
     modifiers: Optional[str] = Field(default=None, max_length=12)
 
     rally_id: UUID
@@ -49,10 +49,10 @@ class ActionUpdateDTO(BaseModel):
     end_zone: Optional[int] = Field(default=None, ge=1, le=9)
     start_subzone: Optional[str] = Field(
         default=None, min_length=1, max_length=1
-    )  # 'A'..'I'
+    )  # 'A'..'D'
     end_subzone: Optional[str] = Field(
         default=None, min_length=1, max_length=1
-    )  # 'A'..'I'
+    )  # 'A'..'D'
     modifiers: Optional[str] = Field(default=None, max_length=12)
     player_jersey_number: Optional[int] = Field(default=None, ge=0, le=99)
     player_id: Optional[UUID] = None

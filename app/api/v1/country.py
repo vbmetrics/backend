@@ -40,7 +40,7 @@ def read_countries_endpoint(
     search: str | None = None,
     service: CountryService = Depends(deps.get_country_service),
 ):
-    return service.get_all(db=db, skip=skip, limit=limit)
+    return service.get_all(db=db, skip=skip, limit=limit, search=search)
 
 
 @router.get(

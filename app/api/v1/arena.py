@@ -34,7 +34,14 @@ def read_arenas_endpoint(
     search: str | None = None,
     service: ArenaService = Depends(deps.get_arena_service),
 ):
-    return service.get_all(db=db, skip=skip, limit=limit)
+    return service.get_all(
+        db=db,
+        skip=skip,
+        limit=limit,
+        country_code=country_code,
+        city=city,
+        search=search
+    )
 
 
 @router.get("/{arena_id}", response_model=ArenaReadDTO)
