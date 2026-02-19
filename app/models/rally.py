@@ -14,6 +14,10 @@ if TYPE_CHECKING:
 
 class RallyBase(SQLModel):
     rally_number_in_set: int = Field(gt=0, description="Rally number within the set.")
+
+    home_score_snapshot: int = Field(default=0, ge=0)
+    away_score_snapshot: int = Field(default=0, ge=0)
+
     raw_rally_code: str = Field(sa_column=Column(String(256), index=True))
     comment: Optional[str] = Field(default=None)
 

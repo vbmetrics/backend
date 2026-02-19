@@ -3,6 +3,8 @@ from datetime import date
 from typing import Any
 from uuid import UUID
 
+# NOWY IMPORT
+from sqlalchemy.orm import joinedload
 from sqlmodel import Session, select
 
 from app.crud.base import CRUDBase
@@ -21,7 +23,12 @@ class CRUDPlayerTeamHistory(
         Overwrites get method to add eager loading
         for 'player', 'team' and 'season' relationship.
         """
-        statement = select(self.model).where(self.model.id == id)
+        # DODANO OPTIONS JOINEDLOAD
+        statement = (
+            select(self.model)
+            .options(joinedload(self.model.player))
+            .where(self.model.id == id)
+        )
         return db.exec(statement).first()
 
     def get_multi(
@@ -38,7 +45,8 @@ class CRUDPlayerTeamHistory(
         """
         Overwrites get_multi method to add dynamic filters.
         """
-        query = select(PlayerTeamHistory)
+        # DODANO OPTIONS JOINEDLOAD
+        query = select(PlayerTeamHistory).options(joinedload(PlayerTeamHistory.player))
 
         if player_id:
             query = query.where(PlayerTeamHistory.player_id == player_id)
@@ -72,6 +80,7 @@ class CRUDPlayerTeamHistory(
         end_date: date | None,
         exclude_id: UUID | None = None,
     ) -> bool:
+        # ... (ta metoda zostaje bez zmian) ...
         m = self.model
         start_col: Any = m.start_date
         end_col: Any = m.end_date
@@ -82,13 +91,8 @@ class CRUDPlayerTeamHistory(
             select(m).where(player_col == player_id).where(season_col == season_id)
         )
 
-        # Overlap condition:
-        # (existing.start <= new_end OR new_end IS NULL)
-        # AND
-        # (existing.end IS NULL OR existing.end >= new_start)
         if end_date is not None:
             statement = statement.where(start_col <= end_date)
-        # existing.end IS NULL OR existing.end >= new_start
         statement = statement.where((end_col.is_(None)) | (end_col >= start_date))  # type: ignore[attr-defined]
 
         if exclude_id:

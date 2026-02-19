@@ -4,6 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.schemas.player import PlayerReadDTO
+
 
 class PlayerTeamHistoryBaseDTO(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -43,3 +45,5 @@ class PlayerTeamHistoryReadDTO(PlayerTeamHistoryBaseDTO):
     id: UUID
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+    player: Optional[PlayerReadDTO] = None

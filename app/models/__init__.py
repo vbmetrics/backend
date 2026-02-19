@@ -8,6 +8,7 @@ from .player_team_history import PlayerTeamHistory, PlayerTeamHistoryBase
 from .rally import Rally, RallyBase
 from .season import Season, SeasonBase, SeasonType
 from .set import Set, SetBase
+from .set_state import SetState
 from .special_event import SpecialEvent, SpecialEventBase, SpecialEventType
 from .staff_member import StaffMember, StaffMemberBase, StaffRoleType
 from .staff_team_history import StaffTeamHistory, StaffTeamHistoryBase
@@ -45,6 +46,8 @@ __all__ = [
     # Set
     "Set",
     "SetBase",
+    # SetState
+    "SetState",
     # SpecialEvent
     "SpecialEvent",
     "SpecialEventBase",

@@ -14,13 +14,13 @@ from .team import Team
 class SetStateBase(SQLModel):
     # Kto serwuje w następnym rally (stan "po poprzednim punkcie")
     serving_team_id: UUID = Field(foreign_key="team.id")
-    serving_index: int = Field(default=0, ge=0, le=5)  # 0..5 (indeks w rotacji)
+    serving_index: int = Field(default=0, ge=0, le=5)
 
     # Rotacje po 6 zawodników (UUID graczy) – kolejność zgodna z P1..P6
-    rotation_home: list[UUID] = Field(
+    rotation_home: list[str] = Field(
         sa_column=Column(JSONB, nullable=False, server_default="[]")
     )
-    rotation_away: list[UUID] = Field(
+    rotation_away: list[str] = Field(
         sa_column=Column(JSONB, nullable=False, server_default="[]")
     )
 

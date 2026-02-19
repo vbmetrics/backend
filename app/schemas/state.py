@@ -25,4 +25,5 @@ class MatchStateDTO(BaseModel):
     serving_index: int  # 0..5
     rotation_home: RotationDTO
     rotation_away: RotationDTO
-    last_rallies: list[dict] = []  # uproszczone; na później ustrukturyzujesz
+    last_rallies: list[dict] = []  # uproszczone
+    past_sets: list[dict] = []

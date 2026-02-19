@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from app.api import deps
 from app.schemas.lineup import LineupCreateDTO
-from app.schemas.rally import RallyCreateDTO
+from app.schemas.rally import RallyInputDTO
 from app.schemas.state import MatchStateDTO
 from app.services.live_service import LiveService
 
@@ -70,14 +70,18 @@ def append_rally_endpoint(
     *,
     db: Session = Depends(deps.get_db),
     match_id: UUID,
-    payload: RallyCreateDTO,
+    payload: RallyInputDTO,  # <--- ZMIANA: Tutaj musi być InputDTO, a nie CreateDTO!
     service: LiveService = Depends(deps.get_live_service),
 ):
     """
-    Dodaje pojedynczy rally na podstawie kodu (payload.code),
-    aktualizuje wynik i rotacje, zwraca nowy snapshot stanu.
+    Dodaje pojedynczy rally na podstawie kodu.
     """
-    return service.add_rally(db=db, match_id=match_id, code=payload.raw_rally_code)
+    return service.add_rally(
+        db=db,
+        match_id=match_id,
+        code=payload.raw_rally_code,
+        comment=payload.comment
+    )
 
 
 @router.get("/{match_id}/rallies")
@@ -98,3 +102,18 @@ def get_rallies_endpoint(
     if limit and limit > 0:
         recent = recent[-limit:]
     return {"match_id": str(match_id), "recent_rallies": recent}
+
+@router.delete(
+    "/{match_id}/rally/last",
+    response_model=MatchStateDTO,
+)
+def undo_last_rally_endpoint(
+    *,
+    db: Session = Depends(deps.get_db),
+    match_id: UUID,
+    service: LiveService = Depends(deps.get_live_service),
+):
+    """
+    Cofa ostatnią akcję w bieżącym secie.
+    """
+    return service.undo_last_rally(db=db, match_id=match_id)

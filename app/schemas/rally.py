@@ -5,6 +5,13 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class RallyInputDTO(BaseModel):
+    """To wysyła frontend: tylko kod, ID meczu i opcjonalnie komentarz."""
+    raw_rally_code: str
+    match_id: UUID
+    comment: Optional[str] = None
+
+
 class RallyBaseDTO(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
