@@ -1,14 +1,16 @@
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import Column, DateTime, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel
 
-from .set import Set
 from .team import Team
+
+if TYPE_CHECKING:
+    from .set import Set
 
 
 class SetStateBase(SQLModel):
@@ -53,7 +55,7 @@ class SetState(SetStateBase, table=True):
     set_id: UUID = Field(foreign_key="set.id", nullable=False, index=True, unique=True)
 
     # Relacje
-    set: Set = Relationship()
+    set: "Set" = Relationship()
     serving_team: Team = Relationship(
         sa_relationship_kwargs={"foreign_keys": "[SetState.serving_team_id]"}
     )

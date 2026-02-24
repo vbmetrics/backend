@@ -2,9 +2,11 @@ from fastapi import APIRouter
 
 from . import (
     action,
+    analytics,
     arena,
     auth,
     country,
+    dashboard,
     lineup,
     live,
     match,
@@ -39,3 +41,5 @@ api_router.include_router(special_event.router)
 api_router.include_router(match_flow.router)
 api_router.include_router(live.router)
 api_router.include_router(lineup.router)
+api_router.include_router(analytics.router)
+api_router.include_router(dashboard.router)

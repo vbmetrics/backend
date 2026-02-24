@@ -47,13 +47,15 @@ def register_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(IntegrityError)
     async def integrity_error_exception_handler(
-        _: Request, exc: IntegrityError
+        request: Request, exc: IntegrityError
     ) -> JSONResponse:
+        # Pozwala to json.dumps sparsować to bez problemu.
+        error_msg = str(exc.orig) if hasattr(exc, 'orig') else str(exc)
+
         payload = {
-            "error": {
-                "code": "CONFLICT",
-                "message": "Database integrity error",
-                "details": exc.orig,
-            }
+            "error": "IntegrityError",
+            "detail": "Database constraint violation.",
+            "message": error_msg
         }
+
         return JSONResponse(status_code=409, content=payload)

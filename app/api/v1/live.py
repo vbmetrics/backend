@@ -33,6 +33,11 @@ def add_rally(
     service: LiveService = Depends(deps.get_live_service),
     idempotency_key: Optional[str] = Header(default=None, alias="Idempotency-Key"),
 ):
+    if payload.code.startswith("!"):
+        return service.process_special_event(
+            db, match_id, payload.code, payload.comment, idempotency_key
+        )
+
     return service.add_rally(
         db=db,
         match_id=match_id,

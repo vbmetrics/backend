@@ -7,6 +7,7 @@ from sqlalchemy import Column, DateTime, func
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from .set import Set
     from .team import Team
 
 
@@ -50,8 +51,7 @@ class Lineup(LineupBase, table=True):
 
     # Relacje
     team: "Team" = Relationship()
-    # Uwaga: Nie definiujemy relacji zwrotnej w modelu Player, aby nie zaśmiecać kodu
-    # Wystarczy nam ścisłe powiązanie przez klucz obcy (foreign_key)
+    set: Optional["Set"] = Relationship(back_populates="lineups")
 
     def __repr__(self) -> str:
         return f"<Lineup set={self.set_id} team={self.team_id}>"

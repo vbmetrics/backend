@@ -52,8 +52,14 @@ class Match(MatchBase, table=True):
     # Relationships
     season: Optional["Season"] = Relationship(back_populates="matches")
     arena: Optional["Arena"] = Relationship(back_populates="matches")
-    sets: list["Set"] = Relationship(back_populates="match")
-    special_events: list["SpecialEvent"] = Relationship(back_populates="match")
+    sets: list["Set"] = Relationship(
+        back_populates="match",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+    special_events: list["SpecialEvent"] = Relationship(
+        back_populates="match",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
     home_team: "Team" = Relationship(
         back_populates="home_matches",
         sa_relationship_kwargs={"foreign_keys": "[Match.home_team_id]"},

@@ -7,8 +7,10 @@ from sqlalchemy import CheckConstraint, Column, DateTime, func
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from .lineup import Lineup
     from .match import Match
     from .rally import Rally
+    from .set_state import SetState
     from .special_event import SpecialEvent
     from .team import Team
 
@@ -48,8 +50,22 @@ class Set(SetBase, table=True):
 
     # Relationships
     match: "Match" = Relationship(back_populates="sets")
-    rallies: list["Rally"] = Relationship(back_populates="set")
-    special_events: list["SpecialEvent"] = Relationship(back_populates="set")
+    rallies: list["Rally"] = Relationship(
+        back_populates="set",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"} # DODANE
+    )
+    set_state: Optional["SetState"] = Relationship(
+        back_populates="set",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"} # DODANE
+    )
+    special_events: list["SpecialEvent"] = Relationship(
+        back_populates="set",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+    lineups: list["Lineup"] = Relationship(
+        back_populates="set",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
     winner_team: Optional["Team"] = Relationship(back_populates="won_sets")
 
     def __repr__(self) -> str:

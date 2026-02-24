@@ -13,9 +13,11 @@ from app.crud.crud_set import CRUDSet
 from app.crud.crud_set_state import crud_set_state
 from app.models.action import Action
 from app.models.match import Match
+from app.models.player import Player
 from app.models.player_team_history import PlayerTeamHistory
 from app.models.rally import Rally
 from app.models.set import Set
+from app.models.special_event import SpecialEvent
 from app.schemas.lineup import (
     LineupSideDTO,
 )
@@ -24,7 +26,7 @@ from app.utils.code_parser import (
     ParsedRally,
     parse_rally,
 )
-from app.utils.special_event_parser import parse_special
+from app.utils.special_event_parser import SpecialEventParser, parse_special
 
 WIN_TARGET_NORMAL = 25
 WIN_TARGET_TIEBREAK = 15
@@ -395,12 +397,23 @@ class LiveService:
 
         s = self._current_set(db, match_id)
 
+        past_sets_out = []
+        if s:
+            past_sets_out = [
+                {
+                    "set_number": x.set_number,
+                    "home_score": x.home_team_score,
+                    "away_score": x.away_team_score
+                }
+                for x in all_sets if x.id != s.id and x.winner_team_id is not None
+            ]
+
         if not s:
             return {
                 "match_id": m.id,
                 "set_number": 0,
-                "home_sets": 0,
-                "away_sets": 0,
+                "home_sets": home_sets, # Zmieniono na zliczone z bazy
+                "away_sets": away_sets,
                 "home_points": 0,
                 "away_points": 0,
                 "serving_side": "home",
@@ -408,14 +421,77 @@ class LiveService:
                 "rotation_home": {"order": [], "libero_id": None},
                 "rotation_away": {"order": [], "libero_id": None},
                 "last_rallies": [],
-                "past_sets": []
+                "past_sets": past_sets_out
             }
 
         ss = crud_set_state.get_by_set_id(db, set_id=s.id)
-        if not ss:
-            raise BadRequestError("Set state not initialized", code="STATE_MISSING")
 
-        serving_side = "home" if ss.serving_team_id == m.home_team_id else "away"
+        if not ss:
+            return {
+                "match_id": m.id,
+                "set_number": s.set_number,
+                "home_sets": home_sets,
+                "away_sets": away_sets,
+                "home_points": s.home_team_score,
+                "away_points": s.away_team_score,
+                "serving_side": "home",
+                "serving_index": 0,
+                "rotation_home": {"order": [], "libero_id": None},
+                "rotation_away": {"order": [], "libero_id": None},
+                "last_rallies": [],
+                "past_sets": past_sets_out
+            }
+
+        # serving_side = "home" if ss.serving_team_id == m.home_team_id else "away"
+
+        serving_team_id = ss.serving_team_id
+
+        # --- NOWA LOGIKA LIBERO ---
+        active_player_ids = (ss.rotation_home or []) + (ss.rotation_away or [])
+        pos_map = {}
+        if active_player_ids:
+            try:
+                players = db.exec(
+                        select(Player).where(Player.id.in_(active_player_ids))
+                    ).all()
+            except Exception as e:
+                print(f"DEBUG Libero - Błąd pobierania pozycji: {e}")
+            # POPRAWKA 1: Wymuszamy, by kluczem słownika był zwykły string
+            pos_map = {str(p.id): (p.playing_position or "").lower() for p in players}
+
+        def get_on_court(order, libero_id, is_serving):
+            if not order:
+                return []
+            # POPRAWKA 2: Upewniamy się, że modyfikowana lista składa się ze stringów
+            on_court = [str(x) for x in order]
+            if not libero_id:
+                return on_court
+
+            # P1(0), P5(4), P6(5)
+            for idx in [0, 4, 5]:
+                if idx >= len(on_court):
+                    continue
+
+                player_id_str = on_court[idx]
+                pos = pos_map.get(player_id_str, "")
+
+                is_mb = "middle" in pos or "mb" in pos or pos == "środkowy"
+
+                if is_mb:
+                    if idx == 0 and is_serving:
+                        continue
+                    on_court[idx] = str(libero_id)
+                    break
+
+            return on_court
+
+        on_court_home = get_on_court(
+            ss.rotation_home, ss.libero_home_id, serving_team_id == m.home_team_id
+        )
+        on_court_away = get_on_court(
+            ss.rotation_away, ss.libero_away_id, serving_team_id == m.away_team_id
+        )
+        # ----------------------------------------------------------------
 
         stmt_r = (
             select(Rally, Set.set_number)
@@ -425,7 +501,8 @@ class LiveService:
         )
         last_rallies_db = list(db.exec(stmt_r))
 
-        last_rallies_out = [
+        # 1. Mapujemy standardowe wymiany
+        combined_events = [
             {
                 "id": r.id,
                 "rally_number_in_set": r.rally_number_in_set,
@@ -433,19 +510,68 @@ class LiveService:
                 "score_team_id": r.score_team_id,
                 "raw_rally_code": r.raw_rally_code,
                 "home_score": r.home_score_snapshot,
-                "away_score": r.away_score_snapshot
+                "away_score": r.away_score_snapshot,
+                "created_at": r.created_at,
+                "is_special": False # Flaga pomocnicza
             }
             for r, set_num in last_rallies_db
         ]
 
-        past_sets_out = [
-            {
-                "set_number": x.set_number,
-                "home_score": x.home_team_score,
-                "away_score": x.away_team_score
-            }
-            for x in all_sets if x.id != s.id and x.winner_team_id is not None
-        ]
+        # 2. Pobieramy zdarzenia specjalne
+        special_events_db = db.exec(
+            select(SpecialEvent, Set.set_number)
+            .join(Set, SpecialEvent.set_id == Set.id)
+            .where(Set.match_id == m.id)
+            .order_by(SpecialEvent.created_at.desc())
+            .limit(10)
+        ).all()
+
+        for se, set_num in special_events_db:
+            combined_events.append({
+                "id": se.id,
+                "rally_number_in_set": None,
+                "set_number": set_num,
+                "score_team_id": None,
+                "raw_rally_code": se.raw_special_code,
+                "home_score": None,
+                "away_score": None,
+                "created_at": se.created_at,
+                "is_special": True # Flaga pomocnicza
+            })
+
+        # 3. Sortujemy chronologicznie (NAJSTARSZE na początku)
+        combined_events.sort(key=lambda x: (x["created_at"] is None, x["created_at"]))
+
+        # Szukamy pierwszej normalnej wymiany w tym oknie,
+        # żeby mieć twardy punkt odniesienia z bazy
+        first_db_rally = next((e for e in combined_events if not e["is_special"]), None)
+
+        current_home = first_db_rally["home_score"] if first_db_rally else s.home_team_score  # noqa: E501
+        current_away = first_db_rally["away_score"] if first_db_rally else s.away_team_score  # noqa: E501
+
+        # Zaczynamy ciągły licznik od pierwszej pobranej akcji
+        # (lub od 1, jeśli dopiero zaczęliśmy seta)
+        current_rally_num = first_db_rally["rally_number_in_set"] if first_db_rally and first_db_rally["rally_number_in_set"] else 1  # noqa: E501
+
+        # 4. Przechodzimy przez oś czasu
+        for event in combined_events:
+            if not event["is_special"]:
+                # Aktualizujemy wynik na podstawie twardych danych z bazy
+                current_home = event["home_score"]
+                current_away = event["away_score"]
+            else:
+                # Akcje specjalne dziedziczą najświeższy wynik z boiska
+                event["home_score"] = current_home
+                event["away_score"] = current_away
+
+            # Wymuszamy idealną ciągłość! Każde zdarzenie (wymiana czy kod specjalny)
+            # dostaje po prostu kolejny numerek w UI, żeby nie było duplikatów.
+            event["rally_number_in_set"] = current_rally_num
+            current_rally_num += 1
+
+        # 5. Odwracamy listę z powrotem (NAJNOWSZE na początku) i ucinamy do 10
+        combined_events.reverse()
+        last_rallies_out = combined_events[:10]
 
         return {
             "match_id": m.id,
@@ -454,17 +580,132 @@ class LiveService:
             "away_sets": away_sets,
             "home_points": s.home_team_score,
             "away_points": s.away_team_score,
-            "serving_side": serving_side,
+            "serving_side": "home" if serving_team_id == m.home_team_id else "away",
             "serving_index": ss.serving_index,
             "rotation_home": {
-                "order": ss.rotation_home, "libero_id": ss.libero_home_id
+                "order": ss.rotation_home,
+                "on_court": on_court_home,
+                "libero_id": ss.libero_home_id
             },
             "rotation_away": {
-                "order": ss.rotation_away, "libero_id": ss.libero_away_id
+                "order": ss.rotation_away,
+                "on_court": on_court_away,
+                "libero_id": ss.libero_away_id
             },
             "last_rallies": last_rallies_out,
             "past_sets": past_sets_out
         }
+
+    def process_special_event(self, db: Session, match_id: UUID, code: str) -> dict:
+        """
+        Przetwarza kody specjalne (zaczynające się od '!'),
+        zapisuje do bazy i aktualizuje stan seta (wynik/zmiany).
+        """
+        # 1. Parsowanie kodu nowym parserem
+        parsed_event = SpecialEventParser.parse(code)
+
+        # 2. Pobranie aktywnego meczu i seta
+        m = self._get_match(db, match_id)
+        s = self._current_set(db, match_id)
+        if not s:
+            raise BadRequestError("Cannot add special event. No active set.")
+
+        # 3. Rozpoznanie, KOGO dotyczy zdarzenie (Przydatne dla kar Sędziego)
+        team_id = None
+        penalized_team_id = None
+
+        if parsed_event.team == "H":
+            team_id = m.home_team_id
+            penalized_team_id = m.home_team_id
+        elif parsed_event.team == "G":
+            team_id = m.away_team_id
+            penalized_team_id = m.away_team_id
+        elif parsed_event.team == "R":
+            # Jeśli to Sędzia (R), sprawdzamy cel (target), np. "H14" lub "G25"
+            if parsed_event.target:
+                if parsed_event.target.startswith("H"):
+                    penalized_team_id = m.home_team_id
+                elif parsed_event.target.startswith("G"):
+                    penalized_team_id = m.away_team_id
+
+        # 4. KARY PUNKTOWE (Czerwona kartka / Błąd ustawienia)
+        if parsed_event.is_penal and penalized_team_id:
+            # Jeśli ukarani zostali Gospodarze, punkt dostają Goście (i na odwrót)
+            if penalized_team_id == m.home_team_id:
+                s.away_team_score += 1
+            else:
+                s.home_team_score += 1
+
+            # (Uwaga: upewnij się, że wywołujesz tutaj ewentualną logikę końca seta,
+            # jeśli ten karny punkt był punktem np. na 25:23)
+
+        # 5. ZMIANY ZAWODNIKÓW (Substitution)
+        # Przykład payload/target: "09.23" (zawodnik z nr 9 schodzi, 23 wchodzi)
+        if parsed_event.event_type == "S" and parsed_event.target and "." in parsed_event.target:  # noqa: E501
+            out_jersey_str, in_jersey_str = parsed_event.target.split(".")
+
+            # Pobieramy ID zawodników na podstawie numerów koszulek i zespołu
+            # Wymaga to odpowiedniego zapytania do bazy (np. PlayerTeamHistory)
+            # Poniżej pseudokod logiki podmiany w tablicy rotacji:
+
+            """
+            out_player_id = self._get_player_id_by_jersey(db, team_id, int(out_jersey_str))
+            in_player_id = self._get_player_id_by_jersey(db, team_id, int(in_jersey_str))
+
+            if parsed_event.team == "H" and out_player_id in ss.rotation_home:
+                idx = ss.rotation_home.index(out_player_id)
+                ss.rotation_home[idx] = in_player_id
+                # Wymuszamy na SQLModel zauważenie zmiany w JSON-ie
+                from sqlalchemy.orm.attributes import flag_modified
+                flag_modified(ss, "rotation_home")
+
+            elif parsed_event.team == "G" and out_player_id in ss.rotation_away:
+                idx = ss.rotation_away.index(out_player_id)
+                ss.rotation_away[idx] = in_player_id
+                from sqlalchemy.orm.attributes import flag_modified
+                flag_modified(ss, "rotation_away")
+            """  # noqa: E501
+
+        # 6. Zapis zdarzenia do bazy danych
+        # Tworzymy słownik (dict) z detalami
+        event_details = {}
+        if parsed_event.target:
+            event_details["target"] = parsed_event.target
+        if parsed_event.comment:
+            event_details["comment"] = parsed_event.comment
+        if parsed_event.modifier:
+            event_details["modifier"] = parsed_event.modifier
+
+        # Tłumaczymy krótkie kody z parsera na pełne słowa dla bazy danych!
+        # UWAGA: Podmień wartości po prawej stronie (np. "timeout") na te,
+        # które faktycznie istnieją w Twojej klasie SpecialEventType!
+        type_mapping = {
+            "T": "timeout",
+            "S": "substitution",
+            "C": "card",
+            "F": "fault",
+            "RC": "red_card",
+            "N": "injury"
+        }
+
+        # Pobieramy przetłumaczony typ (lub zostawiamy "unknown", jeśli nie znaleziono)
+        mapped_event_type = type_mapping.get(parsed_event.event_type, "timeout")
+
+        db_event = SpecialEvent(
+            match_id=m.id,
+            set_id=s.id,
+            team_id=team_id,
+            event_type=mapped_event_type,
+            raw_special_code=code,
+            details=event_details,
+        )
+
+        db.add(db_event)
+        db.commit()
+        db.refresh(s)
+
+        # 7. Zwracamy zaktualizowany stan
+        return self.get_state(db, match_id=match_id)
 
     def undo_last_rally(self, db: Session, match_id: UUID) -> dict:
         m = self._get_match(db, match_id)

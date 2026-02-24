@@ -62,7 +62,10 @@ class Rally(RallyBase, table=True):
         back_populates="won_rallies",
         sa_relationship_kwargs={"foreign_keys": "[Rally.score_team_id]"},
     )
-    actions: list["Action"] = Relationship(back_populates="rally")
+    actions: list["Action"] = Relationship(
+        back_populates="rally",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
 
     def __repr__(self) -> str:
         return f"<Rally id={self.id} set={self.set_id} no={self.rally_number_in_set}>"

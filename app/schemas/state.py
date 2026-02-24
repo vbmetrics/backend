@@ -9,6 +9,7 @@ Side = Literal["home", "away"]
 class RotationDTO(BaseModel):
     # indeks 0..5 odpowiada P1..P6 w kolejce serwisowej
     order: list[UUID]  # [player_id,...] długości 6
+    on_court: Optional[list[UUID]] = None  # player_id aktualnie na boisku
     libero_id: Optional[UUID] = None
 
 

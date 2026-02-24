@@ -189,13 +189,28 @@ def parse_rally(code: str) -> ParsedRally:
         actions.append(action)
 
         # wykryj terminal (# lub -)
-        if terminal_index is None and ev in ("#", "-"):
-            terminal_index = len(actions) - 1
-            terminal_eval = ev  # type: ignore
+        if terminal_index is None:
+            is_terminal = False
 
-            # od teraz kolejne tokeny mogą być tylko post-annotacjami
-            # (petla nie przerywana – zbieramy post-annot dalej)
-            continue
+            if ev == "-":
+                # Znak '-' traktujemy jako twardy BŁĄD (Error).
+                # Niezależnie czy to zagrywka (S-), przyjęcie (R-)
+                # czy atak (A-), wymiana się kończy.
+                is_terminal = True
+            elif ev == "#":
+                # Znak '#' kończy wymianę TYLKO dla Ataku (A), Zagrywki (S) i Bloku (B).
+                # W przypadku Przyjęcia (R), Rozegrania (P) i Obrony (D)
+                # oznacza to perfekcyjne odbicie, więc gramy dalej!
+                if skill in ("A", "S", "B"):
+                    is_terminal = True
+
+            if is_terminal:
+                terminal_index = len(actions) - 1
+                terminal_eval = ev  # type: ignore
+
+                # Od teraz kolejne tokeny mogą być tylko post-annotacjami
+                # (pętla nie jest przerywana – zbieramy post-annot dalej)
+                continue
 
     if not actions:
         raise parse_error("Empty rally.", code="EMPTY_RALLY")

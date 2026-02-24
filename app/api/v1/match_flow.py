@@ -70,12 +70,17 @@ def append_rally_endpoint(
     *,
     db: Session = Depends(deps.get_db),
     match_id: UUID,
-    payload: RallyInputDTO,  # <--- ZMIANA: Tutaj musi być InputDTO, a nie CreateDTO!
+    payload: RallyInputDTO,
     service: LiveService = Depends(deps.get_live_service),
 ):
     """
     Dodaje pojedynczy rally na podstawie kodu.
     """
+    if payload.raw_rally_code.startswith("!"):
+        return service.process_special_event(
+            db, match_id, payload.raw_rally_code
+        )
+
     return service.add_rally(
         db=db,
         match_id=match_id,
