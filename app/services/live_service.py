@@ -539,37 +539,58 @@ class LiveService:
                 "is_special": True # Flaga pomocnicza
             })
 
-        # 3. Sortujemy chronologicznie (NAJSTARSZE na początku)
-        combined_events.sort(key=lambda x: (x["created_at"] is None, x["created_at"]))
+        # 3. Sortujemy NAJNOWSZE na początku (idziemy "wstecz" w czasie)
+        combined_events.sort(
+            key=lambda x: (x["created_at"] is None, x["created_at"]), reverse=True
+        )
 
-        # Szukamy pierwszej normalnej wymiany w tym oknie,
-        # żeby mieć twardy punkt odniesienia z bazy
-        first_db_rally = next((e for e in combined_events if not e["is_special"]), None)
+        # -- PASS 1: ODTWARZANIE WYNIKU WSTECZ --
+        current_home = s.home_team_score
+        current_away = s.away_team_score
 
-        current_home = first_db_rally["home_score"] if first_db_rally else s.home_team_score  # noqa: E501
-        current_away = first_db_rally["away_score"] if first_db_rally else s.away_team_score  # noqa: E501
-
-        # Zaczynamy ciągły licznik od pierwszej pobranej akcji
-        # (lub od 1, jeśli dopiero zaczęliśmy seta)
-        current_rally_num = first_db_rally["rally_number_in_set"] if first_db_rally and first_db_rally["rally_number_in_set"] else 1  # noqa: E501
-
-        # 4. Przechodzimy przez oś czasu
         for event in combined_events:
             if not event["is_special"]:
-                # Aktualizujemy wynik na podstawie twardych danych z bazy
+                # Jeśli to normalna akcja, mamy twardy dowód w postaci snapshota w bazie
                 current_home = event["home_score"]
                 current_away = event["away_score"]
             else:
-                # Akcje specjalne dziedziczą najświeższy wynik z boiska
+                # Zdarzenie specjalne dostaje wynik, który był "po nim"
                 event["home_score"] = current_home
                 event["away_score"] = current_away
 
-            # Wymuszamy idealną ciągłość! Każde zdarzenie (wymiana czy kod specjalny)
-            # dostaje po prostu kolejny numerek w UI, żeby nie było duplikatów.
+                # Czy to zdarzenie spowodowało zmianę wyniku? Sprawdzamy parserem!
+                try:
+                    parsed_event = SpecialEventParser.parse(event["raw_rally_code"])
+                    if parsed_event.is_penal:
+                        penalized_team = None
+                        if parsed_event.team in ("H", "G"):
+                            penalized_team = parsed_event.team
+                        elif parsed_event.team == "R" and parsed_event.target:
+                            if parsed_event.target.startswith("H"):
+                                penalized_team = "H"
+                            elif parsed_event.target.startswith("G"):
+                                penalized_team = "G"
+
+                        # Cofamy się w czasie, więc ODEJMUJEMY punkt wcześniej przyznany
+                        if penalized_team == "H":
+                            current_away -= 1
+                        elif penalized_team == "G":
+                            current_home -= 1
+                except Exception:
+                    pass # W razie błędu omijamy
+
+        # -- PASS 2: NUMERACJA AKCJI DO PRZODU --
+        # Odwracamy listę: NAJSTARSZE na początku
+        combined_events.reverse()
+
+        first_db_rally = next((e for e in combined_events if not e["is_special"]), None)
+        current_rally_num = first_db_rally["rally_number_in_set"] if first_db_rally and first_db_rally["rally_number_in_set"] else 1  # noqa: E501
+
+        for event in combined_events:
             event["rally_number_in_set"] = current_rally_num
             current_rally_num += 1
 
-        # 5. Odwracamy listę z powrotem (NAJNOWSZE na początku) i ucinamy do 10
+        # 5. Odwracamy z powrotem, by Frontend dostał NAJNOWSZE na górze i ucinamy do 10
         combined_events.reverse()
         last_rallies_out = combined_events[:10]
 

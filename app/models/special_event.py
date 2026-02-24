@@ -26,6 +26,7 @@ class SpecialEventType(str, enum.Enum):
     substitution = "substitution"
     card = "card"
     challenge = "challenge"
+    fault = "fault"
     other = "other"
 
 
